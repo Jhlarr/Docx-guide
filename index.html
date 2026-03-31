@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOCX Guide</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f8f9fb;
+    color: #222;
+}
+#content {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+h1, h2, h3 {
+    color: #2c3e50;
+}
+code {
+    background: #eef;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+pre {
+    background: #eef;
+    padding: 15px;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+td, th {
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+th {
+    background: #e3eaf2;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<body>
+
+<div id="content"></div>
+
+<script>
+const markdown = `
+---
+name: docx
+description: Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx files).
+license: Proprietary
+---
+
+# DOCX creation, editing, and analysis
+
+## Overview
+A .docx file is a ZIP archive containing XML files.
+
+## Quick Reference
+
+| Task | Approach |
+|------|----------|
+| Read/analyze content | pandoc or unpack for raw XML |
+| Create new document | Use docx-js |
+| Edit existing document | Unpack → edit XML → repack |
+
+## Notes
+- Structured for easy expansion
+- Works across desktop and mobile
+- Designed for GitHub Pages hosting
+`;
+
+document.getElementById("content").innerHTML = marked.parse(markdown);
+</script>
+
+</body>
+</html>
