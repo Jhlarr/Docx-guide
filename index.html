@@ -3,235 +3,693 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Distilling Price Tracker</title>
+<title>Distilling Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#1c1a17;
-  --bg2:#242019;
-  --bg3:#2e2a22;
-  --bg4:#38322a;
-  --copper:#b5621e;
-  --copper-light:#d4834a;
-  --copper-pale:#f0d4b8;
-  --oak:#8c6240;
-  --oak-light:#a87850;
-  --parchment:#f0e8d8;
-  --parchment-dim:#c8b898;
-  --parchment-muted:#8a7a68;
-  --green:#4a8c50;
-  --green-light:#6aac70;
-  --green-bg:#1e2e20;
-  --green-border:#3a6040;
-  --blue:#3a6a9a;
-  --blue-light:#5a8aba;
-  --blue-bg:#1a2a3a;
-  --blue-border:#2a4a6a;
-  --purple:#7a4a9a;
-  --purple-light:#9a6aba;
-  --purple-bg:#2a1a3a;
-  --purple-border:#5a3a7a;
-  --border:#3a3228;
-  --border-light:#4a4238;
+  /* Light, bright, approachable palette */
+  --bg:       #F7F4EF;   /* warm off-white */
+  --bg2:      #FFFFFF;   /* pure white panels */
+  --bg3:      #FDF9F4;   /* faint warm tint for cards */
+  --bg4:      #F0EBE3;   /* input backgrounds */
+  --border:   #E2D9CE;
+  --border-light: #EDE6DC;
+
+  /* Spirit colour system */
+  --rum:      #C4622D;   /* warm amber-orange */
+  --rum-light:#E8845A;
+  --rum-pale: #FFF0E8;
+  --rum-mid:  #F5CDB4;
+
+  --vodka:    #3B82C4;   /* clear sky blue */
+  --vodka-light:#6BAAD8;
+  --vodka-pale:#EBF4FC;
+  --vodka-mid:#BDDBF3;
+
+  --gin:      #2D9E6B;   /* botanical green */
+  --gin-light:#55C491;
+  --gin-pale: #E8F7F1;
+  --gin-mid:  #B4E8D2;
+
+  --equip:    #7B5EA7;   /* equipment purple */
+  --equip-light:#A084CC;
+  --equip-pale:#F2EEF9;
+
+  --freight:  #E0992A;   /* freight gold */
+  --freight-pale:#FEF7E8;
+
+  --prices:   #E05577;   /* prices pink-red */
+  --prices-pale:#FEE8EF;
+
+  /* Text */
+  --text:     #2C2118;
+  --text-2:   #6B5A4A;
+  --text-3:   #9E8C7C;
+
+  /* Best price green */
+  --best:     #1A7A4A;
+  --best-bg:  #E8F5EE;
+  --best-border:#9ADCBA;
+
+  --radius:   12px;
+  --radius-sm:8px;
+  --shadow:   0 2px 8px rgba(44,33,24,0.08);
+  --shadow-md:0 4px 16px rgba(44,33,24,0.12);
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--parchment);font-size:14px;}
-.t{background:var(--bg);border-radius:14px;overflow:hidden;max-width:900px;margin:0 auto;}
-.hdr{background:var(--bg2);border-bottom:1px solid var(--copper);padding:16px 18px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
-.hdr-left h1{font-size:17px;font-weight:600;color:var(--parchment);letter-spacing:0.3px}
-.hdr-left p{font-size:11px;color:var(--copper-light);margin-top:3px;letter-spacing:0.2px}
-.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.hdr-search{background:var(--bg4);border:1px solid var(--border-light);border-radius:6px;padding:6px 10px;color:var(--parchment);font-size:12px;width:160px;}
-.hdr-search:focus{outline:none;border-color:var(--copper);}
-.hdr-btn{background:var(--copper);color:#fff;border:none;border-radius:7px;font-size:11px;font-weight:600;padding:7px 12px;cursor:pointer;letter-spacing:0.2px;white-space:nowrap;}
-.hdr-btn:hover{background:var(--copper-light)}
 
-/* Spirit category nav */
-.spirit-nav{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;}
-.spirit-btn{padding:10px 16px;font-size:12px;font-weight:600;color:var(--parchment-muted);background:none;border:none;cursor:pointer;text-align:center;border-bottom:3px solid transparent;letter-spacing:0.3px;white-space:nowrap;transition:color 0.15s;}
-.spirit-btn.active-rum{color:#d4834a;border-bottom-color:#b5621e;}
-.spirit-btn.active-vodka{color:#5a8aba;border-bottom-color:#3a6a9a;}
-.spirit-btn.active-gin{color:#9a6aba;border-bottom-color:#7a4a9a;}
-.spirit-btn.active-equip{color:var(--green-light);border-bottom-color:var(--green);}
-.spirit-btn.active-freight{color:var(--oak-light);border-bottom-color:var(--oak);}
-.spirit-btn.active-prices{color:var(--copper-pale);border-bottom-color:var(--copper);}
-.spirit-btn:hover:not([class*="active"]){color:var(--parchment-dim);}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  font-size:15px;
+  min-height:100vh;
+}
 
-/* Still sub-nav */
-.still-nav{display:flex;background:var(--bg3);border-bottom:1px solid var(--border);padding:0 14px;gap:4px;}
-.still-btn{padding:8px 14px;font-size:11px;color:var(--parchment-muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:color 0.15s;}
-.still-btn.active{color:var(--parchment);border-bottom-color:var(--copper-light);font-weight:600;}
-.still-btn:hover:not(.active){color:var(--parchment-dim);}
+.app{max-width:860px;margin:0 auto;padding:16px;}
 
-/* Recipe variant tabs */
-.tabs{display:flex;gap:4px;padding:12px 14px 0;background:var(--bg);border-bottom:1px solid var(--border);overflow-x:auto;}
-.tab{font-size:11px;padding:7px 13px;border:1px solid var(--border-light);border-bottom:none;border-radius:7px 7px 0 0;cursor:pointer;background:var(--bg3);color:var(--parchment-muted);white-space:nowrap;letter-spacing:0.2px;display:flex;align-items:center;gap:4px;}
-.tab.active{background:var(--bg4);color:var(--parchment);border-color:var(--border-light);}
-.tab .del{font-size:13px;color:var(--parchment-muted);}
-.tab .del:hover{color:#e05540;}
-.panel{display:none;padding:14px;}
+/* ── HEADER ── */
+.hdr{
+  background:var(--bg2);
+  border-radius:var(--radius);
+  padding:18px 20px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+}
+.hdr-left{}
+.hdr-title{
+  font-size:22px;
+  font-weight:800;
+  color:var(--text);
+  letter-spacing:-0.3px;
+}
+.hdr-title span{color:var(--rum);}
+.hdr-sub{font-size:12px;color:var(--text-3);margin-top:2px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;}
+.hdr-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.hdr-search{
+  background:var(--bg4);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:8px 12px;
+  font-family:'Nunito',sans-serif;
+  font-size:13px;
+  color:var(--text);
+  width:160px;
+  transition:border-color 0.15s;
+}
+.hdr-search:focus{outline:none;border-color:var(--rum);}
+.hdr-search::placeholder{color:var(--text-3);}
+.upload-btn{
+  background:var(--rum);
+  color:#fff;
+  border:none;
+  border-radius:var(--radius-sm);
+  padding:8px 16px;
+  font-family:'Nunito',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  transition:background 0.15s,transform 0.1s;
+  white-space:nowrap;
+}
+.upload-btn:hover{background:var(--rum-light);}
+.upload-btn:active{transform:scale(0.97);}
+
+/* ── SPIRIT NAV ── */
+.spirit-nav{
+  display:flex;
+  background:var(--bg2);
+  border-radius:var(--radius);
+  padding:6px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow);
+  gap:4px;
+  overflow-x:auto;
+}
+.spirit-btn{
+  flex:1;
+  min-width:72px;
+  padding:10px 8px;
+  font-family:'Nunito',sans-serif;
+  font-size:12px;
+  font-weight:700;
+  color:var(--text-3);
+  background:transparent;
+  border:none;
+  border-radius:var(--radius-sm);
+  cursor:pointer;
+  text-align:center;
+  white-space:nowrap;
+  transition:background 0.15s,color 0.15s;
+  letter-spacing:0.2px;
+}
+.spirit-btn .icon{display:block;font-size:18px;margin-bottom:2px;}
+.spirit-btn:hover:not(.active){background:var(--bg4);color:var(--text-2);}
+.spirit-btn.active-rum{background:var(--rum-pale);color:var(--rum);}
+.spirit-btn.active-vodka{background:var(--vodka-pale);color:var(--vodka);}
+.spirit-btn.active-gin{background:var(--gin-pale);color:var(--gin);}
+.spirit-btn.active-equipment{background:var(--equip-pale);color:var(--equip);}
+.spirit-btn.active-freight{background:var(--freight-pale);color:var(--freight);}
+.spirit-btn.active-prices{background:var(--prices-pale);color:var(--prices);}
+
+/* ── STILL NAV ── */
+.still-nav{
+  display:flex;
+  gap:8px;
+  margin-bottom:10px;
+}
+.still-btn{
+  flex:1;
+  padding:10px 12px;
+  font-family:'Nunito',sans-serif;
+  font-size:12px;
+  font-weight:700;
+  color:var(--text-3);
+  background:var(--bg2);
+  border:2px solid var(--border);
+  border-radius:var(--radius-sm);
+  cursor:pointer;
+  text-align:center;
+  transition:all 0.15s;
+}
+.still-btn .still-icon{font-size:16px;display:block;margin-bottom:2px;}
+.still-btn:hover:not(.active){border-color:var(--text-3);color:var(--text-2);}
+.still-btn.active{color:#fff;border-color:transparent;}
+.still-btn.active.rum-still{background:var(--rum);}
+.still-btn.active.vodka-still{background:var(--vodka);}
+.still-btn.active.gin-still{background:var(--gin);}
+
+/* ── RECIPE TABS ── */
+.tabs{
+  display:flex;
+  gap:6px;
+  margin-bottom:10px;
+  overflow-x:auto;
+  padding-bottom:2px;
+}
+.tab{
+  padding:7px 14px;
+  font-family:'Nunito',sans-serif;
+  font-size:12px;
+  font-weight:700;
+  color:var(--text-3);
+  background:var(--bg2);
+  border:2px solid var(--border);
+  border-radius:20px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all 0.15s;
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.tab:hover:not(.active){border-color:var(--text-3);color:var(--text-2);}
+.tab.active-rum{background:var(--rum);color:#fff;border-color:var(--rum);}
+.tab.active-vodka{background:var(--vodka);color:#fff;border-color:var(--vodka);}
+.tab.active-gin{background:var(--gin);color:#fff;border-color:var(--gin);}
+
+.panel{display:none;}
 .panel.active{display:block;}
 
+/* ── CARDS ── */
+.card{
+  background:var(--bg2);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow);
+}
+.card-title{
+  font-size:15px;
+  font-weight:800;
+  color:var(--text);
+  margin-bottom:4px;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.card-desc{font-size:12px;color:var(--text-3);margin-bottom:12px;font-weight:600;}
+
 /* Still badge */
-.still-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:0.4px;text-transform:uppercase;margin-left:6px;vertical-align:middle;}
-.still-badge.air{background:rgba(90,138,186,0.2);color:#5a8aba;border:1px solid #3a6a9a;}
-.still-badge.reflux{background:rgba(74,140,80,0.2);color:#6aac70;border:1px solid #3a6040;}
+.still-badge{
+  font-size:10px;
+  font-weight:700;
+  padding:3px 8px;
+  border-radius:20px;
+  letter-spacing:0.3px;
+}
+.badge-air{background:var(--vodka-pale);color:var(--vodka);}
+.badge-reflux{background:var(--gin-pale);color:var(--gin);}
 
-.card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;}
-.card h2{font-size:13px;font-weight:600;color:var(--copper-pale);margin-bottom:3px;letter-spacing:0.3px;}
-.card .desc{font-size:11px;color:var(--parchment-muted);margin-bottom:12px;line-height:1.5;}
-.card .still-info{font-size:11px;color:var(--parchment-muted);margin-bottom:10px;padding:8px 10px;background:var(--bg4);border-radius:6px;border-left:3px solid var(--copper);line-height:1.5;}
+/* Still note */
+.still-note{
+  background:var(--bg3);
+  border-left:3px solid var(--rum);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  padding:10px 12px;
+  font-size:12px;
+  color:var(--text-2);
+  margin-bottom:12px;
+  line-height:1.6;
+  font-weight:600;
+}
+.still-note.vodka-note{border-left-color:var(--vodka);}
+.still-note.gin-note{border-left-color:var(--gin);}
 
-.ing-row{display:flex;align-items:flex-start;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:6px;flex-wrap:wrap;}
-.ing-row:last-child{border-bottom:none;}
-.ing-left{min-width:110px;flex:1;}
-.ing-name{font-size:12px;color:var(--parchment);}
-.ing-sub{font-size:11px;color:var(--parchment-muted);margin-top:2px;}
-.price-tags{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
-.ptag{font-size:11px;padding:3px 8px;border-radius:5px;background:var(--bg4);color:var(--parchment-dim);border:1px solid var(--border-light);white-space:nowrap;}
-.ptag.best{background:var(--green-bg);color:var(--green-light);border-color:var(--green-border);font-weight:600;}
-.ptag.unknown{background:var(--bg4);color:var(--oak-light);border-color:var(--oak);}
-
-.sec-title{font-size:10px;font-weight:600;color:var(--copper);text-transform:uppercase;letter-spacing:0.8px;margin:10px 0 7px;}
-.totals-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin-bottom:8px;}
-.sup-card{background:var(--bg4);border:1px solid var(--border-light);border-radius:8px;padding:10px 12px;}
-.sup-card.best-s{border-color:var(--green-border);background:var(--green-bg);}
-.sup-card .sname{font-size:10px;color:var(--parchment-muted);margin-bottom:3px;letter-spacing:0.2px;}
-.sup-card.best-s .sname{color:var(--green-light);font-weight:600;}
-.sup-card .samount{font-size:16px;font-weight:600;color:var(--parchment);}
-.sup-card.best-s .samount{color:var(--green-light);}
-.sup-card .sfreight{font-size:10px;color:var(--copper-light);margin-top:2px;}
-.sup-card .spl{font-size:10px;color:var(--parchment-muted);margin-top:2px;}
-
-.edit-row{display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid var(--border);}
-.edit-row:last-child{border-bottom:none;}
-.edit-row label{font-size:12px;color:var(--parchment-dim);flex:1;}
-.edit-row input{width:72px;padding:5px 8px;border:1px solid var(--border-light);border-radius:6px;font-size:12px;text-align:right;background:var(--bg4);color:var(--parchment);}
-.edit-row input:focus{outline:none;border-color:var(--copper);}
-.edit-row .unit{font-size:10px;color:var(--parchment-muted);min-width:28px;}
-
-.info-note{background:var(--bg4);border:1px solid var(--oak);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--copper-pale);margin-bottom:12px;line-height:1.6;}
-.sup-url{font-size:10px;color:var(--oak-light);margin-bottom:10px;}
-.sup-url a{color:var(--copper-light);}
-.footnote{font-size:10px;color:var(--parchment-muted);font-style:italic;margin-top:3px;}
-
-.upload-drop{border:1.5px dashed var(--border-light);border-radius:10px;padding:20px 16px;text-align:center;cursor:pointer;background:var(--bg3);margin-bottom:14px;}
-.upload-drop:hover{border-color:var(--copper);}
-.upload-drop p{font-size:13px;color:var(--parchment-dim);}
-.upload-drop small{font-size:11px;color:var(--parchment-muted);}
-
-.cat-header{font-size:10px;font-weight:600;color:var(--copper);text-transform:uppercase;letter-spacing:0.6px;margin:14px 0 6px;padding-bottom:5px;border-bottom:1px solid var(--border);}
-.add-equip-bar{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;}
-.add-equip-bar h3{font-size:13px;font-weight:600;color:var(--copper-pale);margin-bottom:10px;}
-.add-equip-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
-.add-equip-fields input,.add-equip-fields select{padding:7px 9px;border:1px solid var(--border-light);border-radius:6px;font-size:12px;background:var(--bg4);color:var(--parchment);width:100%;}
-.add-equip-fields input:focus,.add-equip-fields select:focus{outline:none;border-color:var(--copper);}
-.add-equip-fields select option{background:var(--bg3);}
-.add-equip-name{grid-column:1 / -1;}
-.add-equip-btn{width:100%;padding:9px;background:var(--copper);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:0.2px;}
-.add-equip-btn:hover{background:var(--copper-light);}
-
-.equip-item-card{background:var(--bg4);border:1px solid var(--border-light);border-radius:9px;padding:12px 14px;margin-bottom:8px;}
-.equip-item-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
-.equip-item-name{font-size:13px;font-weight:500;color:var(--parchment);}
-.equip-item-meta{font-size:11px;color:var(--parchment-muted);margin-top:2px;}
-.del-btn{font-size:11px;color:#e05540;background:rgba(224,85,64,0.12);border:1px solid rgba(224,85,64,0.3);border-radius:5px;padding:3px 8px;cursor:pointer;}
-
-.sup-price-row{display:flex;align-items:center;gap:8px;padding:6px 9px;background:var(--bg3);border-radius:6px;border:1px solid var(--border);margin-bottom:4px;}
-.sup-price-row.best-row{background:var(--green-bg);border-color:var(--green-border);}
-.sup-price-row .sup-label{font-size:11px;font-weight:500;color:var(--parchment-dim);min-width:60px;}
-.sup-price-row.best-row .sup-label{color:var(--green-light);}
-.sup-price-row .search-link{font-size:10px;color:var(--copper-light);text-decoration:none;padding:2px 7px;background:rgba(181,98,30,0.15);border:1px solid rgba(181,98,30,0.3);border-radius:4px;white-space:nowrap;}
-.sup-price-row .search-link:hover{background:rgba(181,98,30,0.25);}
-.sup-price-row .price-input{width:68px;padding:4px 7px;border:1px solid var(--border-light);border-radius:5px;font-size:12px;text-align:right;background:var(--bg2);color:var(--parchment);margin-left:auto;}
-.sup-price-row .price-input:focus{outline:none;border-color:var(--copper);}
-.sup-price-row .landed-val{font-size:11px;font-weight:600;color:var(--green-light);min-width:54px;text-align:right;}
-.sup-price-row .best-badge{font-size:9px;color:var(--green-light);background:var(--green-bg);border:1px solid var(--green-border);padding:1px 5px;border-radius:4px;font-weight:600;}
-
-.freight-input-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
-.freight-input-row{display:flex;align-items:center;gap:6px;}
-.freight-input-row span{font-size:11px;color:var(--copper-light);}
-.freight-input-row input{width:64px;padding:5px 7px;border:1px solid var(--oak);border-radius:5px;font-size:12px;text-align:right;background:var(--bg4);color:var(--parchment);}
-.freight-input-row input:focus{outline:none;border-color:var(--copper);}
-
-.modal-wrap{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000;}
-.modal{background:var(--bg3);border:1px solid var(--border-light);border-radius:14px;padding:22px;width:100%;max-width:400px;}
-.modal h3{font-size:15px;font-weight:600;margin-bottom:6px;color:var(--parchment);}
-.modal p{font-size:12px;color:var(--parchment-muted);margin-bottom:12px;line-height:1.5;}
-.modal input[type=text],.modal input[type=number],.modal textarea,.modal select{width:100%;padding:8px 10px;border:1px solid var(--border-light);border-radius:7px;font-size:13px;margin-bottom:10px;background:var(--bg4);color:var(--parchment);}
-.modal input:focus,.modal textarea:focus,.modal select:focus{outline:none;border-color:var(--copper);}
-.modal textarea{height:100px;resize:vertical;}
-.choice-row{display:flex;gap:8px;margin-bottom:10px;}
-.choice-btn{flex:1;padding:8px 10px;border:1px solid var(--border-light);border-radius:7px;font-size:12px;cursor:pointer;background:var(--bg4);color:var(--parchment-dim);text-align:center;}
-.choice-btn.selected{background:var(--copper);color:#fff;border-color:var(--copper);}
-.confirm-btn{width:100%;padding:10px;background:var(--copper);color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;margin-top:4px;}
-.confirm-btn:hover{background:var(--copper-light);}
-.cancel-btn{width:100%;padding:8px;background:transparent;color:var(--parchment-muted);border:none;font-size:12px;cursor:pointer;margin-top:2px;}
-.parsed-preview{background:var(--green-bg);border:1px solid var(--green-border);border-radius:7px;padding:10px 12px;font-size:12px;color:var(--green-light);line-height:1.8;margin-bottom:10px;}
-
-/* Pro/Con notes in gin */
+/* Pro/con */
 .pro-con{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
-.pro-box,.con-box{padding:8px 10px;border-radius:7px;font-size:11px;line-height:1.6;}
-.pro-box{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green-light);}
-.con-box{background:rgba(180,60,40,0.12);border:1px solid rgba(180,60,40,0.3);color:#c07060;}
-.pro-box strong,.con-box strong{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+.pro-box{background:var(--best-bg);border:1.5px solid var(--best-border);border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:var(--best);line-height:1.6;font-weight:600;}
+.con-box{background:#FEF0F0;border:1.5px solid #F5C6C6;border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:#B84040;line-height:1.6;font-weight:600;}
+.pro-box strong,.con-box strong{display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px;opacity:0.8;}
+
+/* Ingredient rows */
+.ing-row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  padding:10px 0;
+  border-bottom:1px solid var(--border-light);
+  gap:8px;
+  flex-wrap:wrap;
+}
+.ing-row:last-child{border-bottom:none;}
+.ing-left{min-width:120px;flex:1;}
+.ing-name{font-size:13px;font-weight:700;color:var(--text);}
+.ing-qty{font-size:11px;color:var(--text-3);margin-top:2px;font-weight:600;}
+.price-tags{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
+.ptag{
+  font-family:'DM Mono',monospace;
+  font-size:11px;
+  padding:3px 8px;
+  border-radius:6px;
+  background:var(--bg4);
+  color:var(--text-2);
+  border:1px solid var(--border);
+  white-space:nowrap;
+}
+.ptag.best{
+  background:var(--best-bg);
+  color:var(--best);
+  border-color:var(--best-border);
+  font-weight:500;
+}
+.ptag.unknown{background:var(--freight-pale);color:var(--freight);border-color:var(--freight-mid,#F5D898);}
+
+/* Section label */
+.sec-label{
+  font-size:10px;
+  font-weight:800;
+  color:var(--text-3);
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  margin:14px 0 8px;
+}
+
+/* Supplier totals grid */
+.totals-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:8px;
+  margin-bottom:8px;
+}
+.sup-card{
+  background:var(--bg3);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:12px;
+  transition:border-color 0.15s;
+}
+.sup-card.best-s{
+  background:var(--best-bg);
+  border-color:var(--best-border);
+}
+.sup-card .sname{font-size:10px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;}
+.sup-card.best-s .sname{color:var(--best);}
+.sup-card .samount{font-size:20px;font-weight:800;color:var(--text);font-family:'DM Mono',monospace;}
+.sup-card.best-s .samount{color:var(--best);}
+.sup-card .sfreight{font-size:10px;color:var(--text-3);margin-top:3px;font-weight:600;}
+.sup-card .spl{font-size:10px;color:var(--text-3);margin-top:2px;font-family:'DM Mono',monospace;}
+.best-chip{display:inline-block;font-size:9px;font-weight:800;color:var(--best);background:var(--best-bg);border:1px solid var(--best-border);border-radius:20px;padding:1px 6px;letter-spacing:0.4px;text-transform:uppercase;margin-left:4px;}
+
+.footnote{font-size:11px;color:var(--text-3);font-style:italic;margin-top:4px;font-weight:600;}
+
+/* ── EQUIPMENT ── */
+.add-bar{
+  background:var(--bg2);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow);
+}
+.add-bar h3{font-size:14px;font-weight:800;color:var(--text);margin-bottom:10px;}
+.add-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.add-fields input,.add-fields select{
+  padding:8px 10px;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-family:'Nunito',sans-serif;
+  font-size:13px;
+  background:var(--bg4);
+  color:var(--text);
+  width:100%;
+}
+.add-fields input:focus,.add-fields select:focus{outline:none;border-color:var(--equip);}
+.full-col{grid-column:1/-1;}
+.add-btn{
+  width:100%;
+  padding:10px;
+  background:var(--equip);
+  color:#fff;
+  border:none;
+  border-radius:var(--radius-sm);
+  font-family:'Nunito',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  transition:background 0.15s;
+}
+.add-btn:hover{background:var(--equip-light);}
+
+.equip-card{
+  background:var(--bg2);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:12px 14px;
+  margin-bottom:8px;
+  box-shadow:var(--shadow);
+}
+.equip-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.equip-name{font-size:13px;font-weight:700;color:var(--text);}
+.equip-meta{font-size:11px;color:var(--text-3);margin-top:2px;font-weight:600;}
+.del-btn{
+  font-size:11px;
+  color:#B84040;
+  background:#FEF0F0;
+  border:1px solid #F5C6C6;
+  border-radius:6px;
+  padding:4px 10px;
+  cursor:pointer;
+  font-family:'Nunito',sans-serif;
+  font-weight:700;
+}
+
+.sup-price-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 10px;
+  background:var(--bg3);
+  border-radius:var(--radius-sm);
+  border:1px solid var(--border);
+  margin-bottom:4px;
+  flex-wrap:wrap;
+}
+.sup-price-row.best-row{background:var(--best-bg);border-color:var(--best-border);}
+.sup-label{font-size:12px;font-weight:700;color:var(--text-2);min-width:62px;}
+.sup-price-row.best-row .sup-label{color:var(--best);}
+.search-link{
+  font-size:11px;
+  color:var(--rum);
+  text-decoration:none;
+  padding:3px 8px;
+  background:var(--rum-pale);
+  border:1px solid var(--rum-mid);
+  border-radius:6px;
+  white-space:nowrap;
+  font-weight:700;
+}
+.search-link:hover{background:var(--rum-mid);}
+.price-input{
+  width:70px;
+  padding:5px 8px;
+  border:1.5px solid var(--border);
+  border-radius:6px;
+  font-family:'DM Mono',monospace;
+  font-size:12px;
+  text-align:right;
+  background:var(--bg2);
+  color:var(--text);
+  margin-left:auto;
+}
+.price-input:focus{outline:none;border-color:var(--equip);}
+.landed-val{
+  font-family:'DM Mono',monospace;
+  font-size:12px;
+  font-weight:500;
+  color:var(--best);
+  min-width:56px;
+  text-align:right;
+}
+.best-badge{
+  font-size:9px;
+  font-weight:800;
+  color:var(--best);
+  background:var(--best-bg);
+  border:1px solid var(--best-border);
+  padding:2px 6px;
+  border-radius:20px;
+  text-transform:uppercase;
+  letter-spacing:0.3px;
+}
+
+/* ── CAT HEADER ── */
+.cat-header{
+  font-size:10px;
+  font-weight:800;
+  color:var(--text-3);
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  margin:14px 0 8px;
+  padding-bottom:6px;
+  border-bottom:1.5px solid var(--border);
+}
+
+/* ── FREIGHT ── */
+.info-note{
+  background:var(--freight-pale);
+  border:1.5px solid #F5D898;
+  border-radius:var(--radius-sm);
+  padding:12px 14px;
+  font-size:12px;
+  color:#8A6010;
+  margin-bottom:14px;
+  line-height:1.6;
+  font-weight:600;
+}
+.freight-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 0;
+  border-bottom:1px solid var(--border-light);
+  flex-wrap:wrap;
+  gap:10px;
+}
+.freight-row:last-child{border-bottom:none;}
+.freight-name{font-size:13px;font-weight:700;color:var(--text);}
+.freight-url{font-size:11px;color:var(--text-3);margin-top:2px;font-weight:600;}
+.freight-url a{color:var(--rum);}
+.freight-inputs{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.freight-field{display:flex;align-items:center;gap:5px;}
+.freight-field span{font-size:11px;color:var(--text-3);font-weight:700;white-space:nowrap;}
+.freight-field input{
+  width:68px;
+  padding:6px 8px;
+  border:1.5px solid var(--border);
+  border-radius:6px;
+  font-family:'DM Mono',monospace;
+  font-size:12px;
+  text-align:right;
+  background:var(--bg4);
+  color:var(--text);
+}
+.freight-field input:focus{outline:none;border-color:var(--freight);}
+
+/* ── PRICES ── */
+.edit-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 0;
+  border-bottom:1px solid var(--border-light);
+}
+.edit-row:last-child{border-bottom:none;}
+.edit-row label{font-size:12px;font-weight:700;color:var(--text-2);flex:1;}
+.edit-row input{
+  width:76px;
+  padding:5px 8px;
+  border:1.5px solid var(--border);
+  border-radius:6px;
+  font-family:'DM Mono',monospace;
+  font-size:12px;
+  text-align:right;
+  background:var(--bg4);
+  color:var(--text);
+}
+.edit-row input:focus{outline:none;border-color:var(--prices);}
+.edit-row .unit{font-size:10px;color:var(--text-3);min-width:32px;font-weight:700;}
+.sup-url{font-size:11px;margin-bottom:10px;}
+.sup-url a{color:var(--rum);font-weight:700;}
+
+/* ── MODAL ── */
+.modal-wrap{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(44,33,24,0.5);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;z-index:1000;
+  backdrop-filter:blur(3px);
+}
+.modal{
+  background:var(--bg2);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:24px;
+  width:100%;
+  max-width:420px;
+  box-shadow:var(--shadow-md);
+}
+.modal h3{font-size:16px;font-weight:800;margin-bottom:6px;color:var(--text);}
+.modal p{font-size:12px;color:var(--text-3);margin-bottom:12px;line-height:1.5;font-weight:600;}
+.modal input,.modal textarea,.modal select{
+  width:100%;
+  padding:9px 11px;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-family:'Nunito',sans-serif;
+  font-size:13px;
+  margin-bottom:10px;
+  background:var(--bg4);
+  color:var(--text);
+}
+.modal input:focus,.modal textarea:focus{outline:none;border-color:var(--rum);}
+.modal textarea{height:110px;resize:vertical;}
+.parsed-preview{
+  background:var(--best-bg);
+  border:1.5px solid var(--best-border);
+  border-radius:var(--radius-sm);
+  padding:10px 12px;
+  font-size:12px;
+  color:var(--best);
+  line-height:1.8;
+  margin-bottom:10px;
+  font-weight:600;
+}
+.confirm-btn{
+  width:100%;
+  padding:11px;
+  background:var(--rum);
+  color:#fff;
+  border:none;
+  border-radius:var(--radius-sm);
+  font-family:'Nunito',sans-serif;
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+  margin-top:4px;
+  transition:background 0.15s;
+}
+.confirm-btn:hover{background:var(--rum-light);}
+.cancel-btn{
+  width:100%;
+  padding:9px;
+  background:transparent;
+  color:var(--text-3);
+  border:none;
+  font-family:'Nunito',sans-serif;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  margin-top:4px;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .app{padding:10px;}
+  .hdr{padding:14px;}
+  .hdr-title{font-size:18px;}
+  .hdr-search{width:120px;}
+  .spirit-btn{min-width:52px;padding:8px 4px;font-size:11px;}
+  .spirit-btn .icon{font-size:16px;}
+  .pro-con{grid-template-columns:1fr;}
+  .totals-grid{grid-template-columns:repeat(2,1fr);}
+  .sup-price-row{gap:5px;}
+  .price-input{width:60px;}
+  .add-fields{grid-template-columns:1fr;}
+}
+@media(max-width:380px){
+  .spirit-btn span.label{display:none;}
+  .spirit-btn .icon{font-size:20px;margin-bottom:0;}
+  .totals-grid{grid-template-columns:repeat(2,1fr);}
+}
 </style>
 </head>
 <body>
-<div class="t">
+<div class="app">
+
+  <!-- HEADER -->
   <div class="hdr">
     <div class="hdr-left">
-      <h1>Distilling Price Tracker</h1>
-      <p>Landed cost — product + freight — across all suppliers</p>
+      <div class="hdr-title">Distilling <span>Tracker</span></div>
+      <div class="hdr-sub">Landed cost across all suppliers</div>
     </div>
     <div class="hdr-right">
       <input type="text" class="hdr-search" placeholder="Search..." oninput="globalSearch(this.value)">
-      <button class="hdr-btn" onclick="triggerUpload()">Upload recipe</button>
+      <button class="upload-btn" onclick="triggerUpload()">⬆ Upload recipe</button>
     </div>
   </div>
 
-  <!-- Spirit category nav -->
-  <div class="spirit-nav" id="spirit-nav">
-    <button class="spirit-btn" id="snav-rum" onclick="switchSpirit('rum')">🥃 Rum</button>
-    <button class="spirit-btn" id="snav-vodka" onclick="switchSpirit('vodka')">🫙 Vodka</button>
-    <button class="spirit-btn" id="snav-gin" onclick="switchSpirit('gin')">🌿 Gin</button>
-    <button class="spirit-btn" id="snav-equipment" onclick="switchSpirit('equipment')">⚙️ Equipment</button>
-    <button class="spirit-btn" id="snav-freight" onclick="switchSpirit('freight')">📦 Freight</button>
-    <button class="spirit-btn" id="snav-prices" onclick="switchSpirit('prices')">💲 Prices</button>
+  <!-- SPIRIT NAV -->
+  <div class="spirit-nav">
+    <button class="spirit-btn" id="snav-rum" onclick="switchSpirit('rum')"><span class="icon">🥃</span><span class="label">Rum</span></button>
+    <button class="spirit-btn" id="snav-vodka" onclick="switchSpirit('vodka')"><span class="icon">🫙</span><span class="label">Vodka</span></button>
+    <button class="spirit-btn" id="snav-gin" onclick="switchSpirit('gin')"><span class="icon">🌿</span><span class="label">Gin</span></button>
+    <button class="spirit-btn" id="snav-equipment" onclick="switchSpirit('equipment')"><span class="icon">⚙️</span><span class="label">Gear</span></button>
+    <button class="spirit-btn" id="snav-freight" onclick="switchSpirit('freight')"><span class="icon">📦</span><span class="label">Freight</span></button>
+    <button class="spirit-btn" id="snav-prices" onclick="switchSpirit('prices')"><span class="icon">💲</span><span class="label">Prices</span></button>
   </div>
 
-  <!-- Rum section -->
+  <!-- RUM -->
   <div id="section-rum" style="display:none;">
     <div class="still-nav">
-      <button class="still-btn" id="rstill-air" onclick="switchRumStill('air')">4.5L Air Still</button>
-      <button class="still-btn" id="rstill-reflux" onclick="switchRumStill('reflux')">23L Reflux Still</button>
+      <button class="still-btn rum-still" id="rstill-air" onclick="switchRumStill('air')"><span class="still-icon">🫧</span>4.5L Air Still</button>
+      <button class="still-btn rum-still" id="rstill-reflux" onclick="switchRumStill('reflux')"><span class="still-icon">⚗️</span>23L Reflux Still</button>
     </div>
     <div class="tabs" id="rum-tabs"></div>
     <div id="rum-panels"></div>
   </div>
 
-  <!-- Vodka section -->
+  <!-- VODKA -->
   <div id="section-vodka" style="display:none;">
     <div class="still-nav">
-      <button class="still-btn" id="vstill-air" onclick="switchVodkaStill('air')">4.5L Air Still</button>
-      <button class="still-btn" id="vstill-reflux" onclick="switchVodkaStill('reflux')">23L Reflux Still</button>
+      <button class="still-btn vodka-still" id="vstill-air" onclick="switchVodkaStill('air')"><span class="still-icon">🫧</span>4.5L Air Still</button>
+      <button class="still-btn vodka-still" id="vstill-reflux" onclick="switchVodkaStill('reflux')"><span class="still-icon">⚗️</span>23L Reflux Still</button>
     </div>
     <div class="tabs" id="vodka-tabs"></div>
     <div id="vodka-panels"></div>
   </div>
 
-  <!-- Gin section -->
+  <!-- GIN -->
   <div id="section-gin" style="display:none;">
     <div class="still-nav">
-      <button class="still-btn" id="gstill-air" onclick="switchGinStill('air')">4.5L Air Still</button>
-      <button class="still-btn" id="gstill-reflux" onclick="switchGinStill('reflux')">23L Reflux Still</button>
+      <button class="still-btn gin-still" id="gstill-air" onclick="switchGinStill('air')"><span class="still-icon">🫧</span>4.5L Air Still</button>
+      <button class="still-btn gin-still" id="gstill-reflux" onclick="switchGinStill('reflux')"><span class="still-icon">⚗️</span>23L Reflux Still</button>
     </div>
     <div class="tabs" id="gin-tabs"></div>
     <div id="gin-panels"></div>
   </div>
 
-  <div id="section-equipment" style="display:none;padding:14px"><div id="equip-panel"></div></div>
-  <div id="section-freight" style="display:none;padding:14px"><div id="freight-panel"></div></div>
-  <div id="section-prices" style="display:none;padding:14px"><div id="prices-panel"></div></div>
+  <div id="section-equipment" style="display:none;"><div id="equip-panel"></div></div>
+  <div id="section-freight" style="display:none;"><div id="freight-panel"></div></div>
+  <div id="section-prices" style="display:none;"><div id="prices-panel"></div></div>
 </div>
 
 <div id="modal-root"></div>
@@ -239,7 +697,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script>
-// ── SUPPLIERS ──────────────────────────────────────────────────────────────
 const SUPS=[
   {id:'hoppy',   name:'Hoppy Days',        short:'Hoppy',   url:'hoppydays.com.au',           search:'https://hoppydays.com.au/search?q='},
   {id:'kegland', name:'Kegland',           short:'Kegland', url:'kegland.com.au',             search:'https://www.kegland.com.au/search?q='},
@@ -248,7 +705,6 @@ const SUPS=[
   {id:'five',    name:'5 Star Distilling', short:'5 Star',  url:'5stardistilling.com',        search:'https://www.5stardistilling.com/search?q='},
   {id:'adel',    name:'Adelaide Barrels',  short:'Adelaide',url:'adelaidewinebarrels.com.au', search:'https://adelaidewinebarrels.com.au/?s='},
 ];
-
 const FREIGHT={
   hoppy:  {rate:12.00,freeOver:100},
   kegland:{rate:10.95,freeOver:150},
@@ -257,279 +713,109 @@ const FREIGHT={
   five:   {rate:12.50,freeOver:120},
   adel:   {rate:15.00,freeOver:null},
 };
-
 function freight(sid,total){const f=FREIGHT[sid];if(!f)return 0;if(f.freeOver!=null&&total>=f.freeOver)return 0;return f.rate;}
 
-// ── INGREDIENTS ───────────────────────────────────────────────────────────
 const INGS=[
-  // Rum base
-  {id:'maize',    name:'Rolled/flaked maize',          unit:'/kg',   cat:'Grains',      keywords:['maize','flaked corn','rolled corn'],              p:{hoppy:4.88, kegland:null, beerco:4.95, quality:5.10, five:5.20, adel:null}},
-  {id:'rye',      name:'Ryecorn malt',                 unit:'/kg',   cat:'Grains',      keywords:['rye','ryecorn','rye malt'],                       p:{hoppy:3.56, kegland:null, beerco:3.70, quality:3.65, five:3.80, adel:null}},
-  {id:'malt',     name:'Distillers malt Laureate',     unit:'/kg',   cat:'Grains',      keywords:['distillers malt','laureate'],                     p:{hoppy:2.32, kegland:null, beerco:2.45, quality:2.40, five:2.50, adel:null}},
-  {id:'munich',   name:'Dark Munich malt',             unit:'/kg',   cat:'Grains',      keywords:['munich','dark munich'],                           p:{hoppy:3.76, kegland:null, beerco:3.90, quality:3.85, five:4.00, adel:null}},
-  {id:'bsmol',    name:'Blackstrap molasses',          unit:'/kg',   cat:'Sugars',      keywords:['blackstrap','black strap'],                       p:{hoppy:3.50, kegland:null, beerco:3.60, quality:3.55, five:3.70, adel:null}},
-  {id:'bundmol',  name:'Bundaberg refinery molasses',  unit:'/kg',   cat:'Sugars',      keywords:['bundaberg','refinery molasses'],                  p:{hoppy:4.20, kegland:null, beerco:4.30, quality:4.25, five:4.40, adel:null}},
-  {id:'bsugar',   name:'Brown sugar',                  unit:'/kg',   cat:'Sugars',      keywords:['brown sugar','raw sugar'],                        p:{hoppy:2.00, kegland:null, beerco:2.10, quality:2.05, five:null, adel:null}},
-  // Vodka base
-  {id:'wsugar',   name:'White cane sugar',             unit:'/kg',   cat:'Sugars',      keywords:['white sugar','cane sugar','plain sugar'],         p:{hoppy:1.80, kegland:null, beerco:1.90, quality:1.85, five:null, adel:null}},
-  {id:'wheat',    name:'Flaked wheat',                 unit:'/kg',   cat:'Grains',      keywords:['wheat','flaked wheat','wheat malt'],              p:{hoppy:3.20, kegland:null, beerco:3.35, quality:3.25, five:3.40, adel:null}},
-  {id:'barley',   name:'Pale malt (barley)',           unit:'/kg',   cat:'Grains',      keywords:['pale malt','barley','2 row'],                     p:{hoppy:2.10, kegland:null, beerco:2.25, quality:2.15, five:2.30, adel:null}},
-  {id:'potato',   name:'Potato flakes (dehydrated)',   unit:'/kg',   cat:'Grains',      keywords:['potato','potato flakes'],                        p:{hoppy:null, kegland:null, beerco:null, quality:null, five:6.50, adel:null}},
-  // Yeasts
-  {id:'yeast',    name:"Baker's yeast",                unit:'/pkt',  cat:'Yeasts',      keywords:["baker's yeast",'bakers yeast'],                   p:{hoppy:1.50, kegland:null, beerco:1.60, quality:1.55, five:1.60, adel:null}},
-  {id:'rumyeast', name:'Rum yeast (BE-134 / DADY)',    unit:'/pkt',  cat:'Yeasts',      keywords:['rum yeast','dady','be-134'],                      p:{hoppy:3.50, kegland:3.20, beerco:3.60, quality:3.45, five:3.80, adel:null}},
-  {id:'ec1118',   name:'EC-1118 champagne yeast',      unit:'/pkt',  cat:'Yeasts',      keywords:['ec-1118','champagne yeast','ec1118'],             p:{hoppy:3.20, kegland:2.90, beerco:3.30, quality:3.10, five:3.50, adel:null}},
-  {id:'turbo48',  name:'Turbo 48hr yeast',             unit:'/pkt',  cat:'Yeasts',      keywords:['turbo','turbo 48','turbo yeast'],                 p:{hoppy:4.50, kegland:3.80, beerco:4.40, quality:4.20, five:4.80, adel:null}},
-  // Nutrients
-  {id:'dap',      name:'Yeast nutrient (DAP)',          unit:'/100g', cat:'Nutrients',   keywords:['dap','yeast nutrient'],                          p:{hoppy:2.50, kegland:2.20, beerco:2.60, quality:2.40, five:2.80, adel:null}},
-  {id:'fermaid',  name:'Fermaid-O (organic nutrient)', unit:'/50g',  cat:'Nutrients',   keywords:['fermaid','fermaid-o'],                            p:{hoppy:4.20, kegland:3.90, beerco:4.30, quality:4.10, five:null, adel:null}},
-  // Oak / ageing
-  {id:'froak',    name:'French oak chips (med toast)',  unit:'/100g', cat:'Oak & ageing', keywords:['french oak'],                                   p:{hoppy:3.50, kegland:3.20, beerco:3.60, quality:3.40, five:3.80, adel:null}},
-  {id:'amoak',    name:'American oak chips (med toast)',unit:'/100g', cat:'Oak & ageing', keywords:['american oak'],                                 p:{hoppy:2.90, kegland:2.80, beerco:3.00, quality:2.95, five:3.10, adel:null}},
-  // Gin botanicals
-  {id:'juniper',  name:'Juniper berries',              unit:'/50g',  cat:'Botanicals',  keywords:['juniper'],                                       p:{hoppy:3.80, kegland:null, beerco:3.90, quality:3.75, five:4.00, adel:null}},
-  {id:'coriandr', name:'Coriander seed',               unit:'/50g',  cat:'Botanicals',  keywords:['coriander seed'],                                p:{hoppy:2.20, kegland:null, beerco:2.30, quality:2.15, five:2.40, adel:null}},
-  {id:'angelica', name:'Angelica root',                unit:'/50g',  cat:'Botanicals',  keywords:['angelica'],                                      p:{hoppy:3.50, kegland:null, beerco:3.60, quality:3.40, five:3.80, adel:null}},
-  {id:'orispeel', name:'Dried orange peel',            unit:'/50g',  cat:'Botanicals',  keywords:['orange peel','dried orange'],                    p:{hoppy:2.50, kegland:null, beerco:2.60, quality:2.45, five:2.70, adel:null}},
-  {id:'lempeel',  name:'Dried lemon peel',             unit:'/50g',  cat:'Botanicals',  keywords:['lemon peel','dried lemon'],                      p:{hoppy:2.50, kegland:null, beerco:2.60, quality:2.45, five:2.70, adel:null}},
-  {id:'cassia',   name:'Cassia bark (cinnamon)',       unit:'/50g',  cat:'Botanicals',  keywords:['cassia','cinnamon bark'],                        p:{hoppy:2.80, kegland:null, beerco:2.90, quality:2.75, five:3.00, adel:null}},
-  {id:'cardamom', name:'Cardamom pods',                unit:'/50g',  cat:'Botanicals',  keywords:['cardamom'],                                      p:{hoppy:4.20, kegland:null, beerco:4.30, quality:4.10, five:4.50, adel:null}},
-  {id:'cubeb',    name:'Cubeb pepper',                 unit:'/50g',  cat:'Botanicals',  keywords:['cubeb'],                                         p:{hoppy:4.50, kegland:null, beerco:4.60, quality:4.40, five:4.80, adel:null}},
+  {id:'maize',   name:'Rolled/flaked maize',          unit:'/kg',  cat:'Grains',     keywords:['maize','flaked corn','rolled corn'],   p:{hoppy:4.88,kegland:null,beerco:4.95,quality:5.10,five:5.20,adel:null}},
+  {id:'rye',     name:'Ryecorn malt',                 unit:'/kg',  cat:'Grains',     keywords:['rye','ryecorn','rye malt'],            p:{hoppy:3.56,kegland:null,beerco:3.70,quality:3.65,five:3.80,adel:null}},
+  {id:'malt',    name:'Distillers malt Laureate',     unit:'/kg',  cat:'Grains',     keywords:['distillers malt','laureate'],          p:{hoppy:2.32,kegland:null,beerco:2.45,quality:2.40,five:2.50,adel:null}},
+  {id:'munich',  name:'Dark Munich malt',             unit:'/kg',  cat:'Grains',     keywords:['munich','dark munich'],               p:{hoppy:3.76,kegland:null,beerco:3.90,quality:3.85,five:4.00,adel:null}},
+  {id:'bsmol',   name:'Blackstrap molasses',          unit:'/kg',  cat:'Sugars',     keywords:['blackstrap','black strap'],           p:{hoppy:3.50,kegland:null,beerco:3.60,quality:3.55,five:3.70,adel:null}},
+  {id:'bundmol', name:'Bundaberg refinery molasses',  unit:'/kg',  cat:'Sugars',     keywords:['bundaberg','refinery molasses'],      p:{hoppy:4.20,kegland:null,beerco:4.30,quality:4.25,five:4.40,adel:null}},
+  {id:'bsugar',  name:'Brown sugar',                  unit:'/kg',  cat:'Sugars',     keywords:['brown sugar','raw sugar'],            p:{hoppy:2.00,kegland:null,beerco:2.10,quality:2.05,five:null,adel:null}},
+  {id:'wsugar',  name:'White cane sugar',             unit:'/kg',  cat:'Sugars',     keywords:['white sugar','cane sugar'],           p:{hoppy:1.80,kegland:null,beerco:1.90,quality:1.85,five:null,adel:null}},
+  {id:'wheat',   name:'Flaked wheat',                 unit:'/kg',  cat:'Grains',     keywords:['wheat','flaked wheat','wheat malt'],  p:{hoppy:3.20,kegland:null,beerco:3.35,quality:3.25,five:3.40,adel:null}},
+  {id:'barley',  name:'Pale malt (barley)',           unit:'/kg',  cat:'Grains',     keywords:['pale malt','barley','2 row'],         p:{hoppy:2.10,kegland:null,beerco:2.25,quality:2.15,five:2.30,adel:null}},
+  {id:'potato',  name:'Potato flakes (dehydrated)',   unit:'/kg',  cat:'Grains',     keywords:['potato','potato flakes'],             p:{hoppy:null,kegland:null,beerco:null,quality:null,five:6.50,adel:null}},
+  {id:'yeast',   name:"Baker's yeast",                unit:'/pkt', cat:'Yeasts',     keywords:["baker's yeast",'bakers yeast'],       p:{hoppy:1.50,kegland:null,beerco:1.60,quality:1.55,five:1.60,adel:null}},
+  {id:'rumyeast',name:'Rum yeast (BE-134 / DADY)',    unit:'/pkt', cat:'Yeasts',     keywords:['rum yeast','dady','be-134'],          p:{hoppy:3.50,kegland:3.20,beerco:3.60,quality:3.45,five:3.80,adel:null}},
+  {id:'ec1118',  name:'EC-1118 champagne yeast',      unit:'/pkt', cat:'Yeasts',     keywords:['ec-1118','champagne yeast'],          p:{hoppy:3.20,kegland:2.90,beerco:3.30,quality:3.10,five:3.50,adel:null}},
+  {id:'turbo48', name:'Turbo 48hr yeast',             unit:'/pkt', cat:'Yeasts',     keywords:['turbo','turbo yeast'],               p:{hoppy:4.50,kegland:3.80,beerco:4.40,quality:4.20,five:4.80,adel:null}},
+  {id:'dap',     name:'Yeast nutrient (DAP)',          unit:'/100g',cat:'Nutrients',  keywords:['dap','yeast nutrient'],              p:{hoppy:2.50,kegland:2.20,beerco:2.60,quality:2.40,five:2.80,adel:null}},
+  {id:'fermaid', name:'Fermaid-O (organic nutrient)', unit:'/50g', cat:'Nutrients',  keywords:['fermaid','fermaid-o'],               p:{hoppy:4.20,kegland:3.90,beerco:4.30,quality:4.10,five:null,adel:null}},
+  {id:'froak',   name:'French oak chips (med toast)', unit:'/100g',cat:'Oak & ageing',keywords:['french oak'],                       p:{hoppy:3.50,kegland:3.20,beerco:3.60,quality:3.40,five:3.80,adel:null}},
+  {id:'amoak',   name:'American oak chips (med toast)',unit:'/100g',cat:'Oak & ageing',keywords:['american oak'],                    p:{hoppy:2.90,kegland:2.80,beerco:3.00,quality:2.95,five:3.10,adel:null}},
+  {id:'juniper', name:'Juniper berries',              unit:'/50g', cat:'Botanicals', keywords:['juniper'],                          p:{hoppy:3.80,kegland:null,beerco:3.90,quality:3.75,five:4.00,adel:null}},
+  {id:'coriandr',name:'Coriander seed',               unit:'/50g', cat:'Botanicals', keywords:['coriander seed'],                   p:{hoppy:2.20,kegland:null,beerco:2.30,quality:2.15,five:2.40,adel:null}},
+  {id:'angelica',name:'Angelica root',                unit:'/50g', cat:'Botanicals', keywords:['angelica'],                         p:{hoppy:3.50,kegland:null,beerco:3.60,quality:3.40,five:3.80,adel:null}},
+  {id:'orispeel',name:'Dried orange peel',            unit:'/50g', cat:'Botanicals', keywords:['orange peel','dried orange'],       p:{hoppy:2.50,kegland:null,beerco:2.60,quality:2.45,five:2.70,adel:null}},
+  {id:'lempeel', name:'Dried lemon peel',             unit:'/50g', cat:'Botanicals', keywords:['lemon peel','dried lemon'],         p:{hoppy:2.50,kegland:null,beerco:2.60,quality:2.45,five:2.70,adel:null}},
+  {id:'cassia',  name:'Cassia bark (cinnamon)',       unit:'/50g', cat:'Botanicals', keywords:['cassia','cinnamon bark'],           p:{hoppy:2.80,kegland:null,beerco:2.90,quality:2.75,five:3.00,adel:null}},
+  {id:'cardamom',name:'Cardamom pods',                unit:'/50g', cat:'Botanicals', keywords:['cardamom'],                         p:{hoppy:4.20,kegland:null,beerco:4.30,quality:4.10,five:4.50,adel:null}},
+  {id:'cubeb',   name:'Cubeb pepper',                 unit:'/50g', cat:'Botanicals', keywords:['cubeb'],                            p:{hoppy:4.50,kegland:null,beerco:4.60,quality:4.40,five:4.80,adel:null}},
 ];
 
-// ── EQUIPMENT ─────────────────────────────────────────────────────────────
 const BUILTIN_EQUIP=[
-  {id:'ferm30',    name:'30L fermenter with lid & tap', cat:'Fermenters & airlocks', unit:'/ea',p:{hoppy:28.00,kegland:24.95,beerco:27.50,quality:26.00,five:29.00,adel:null}},
-  {id:'ferm15',    name:'15L fermenter with lid',       cat:'Fermenters & airlocks', unit:'/ea',p:{hoppy:18.00,kegland:16.50,beerco:17.50,quality:17.00,five:18.50,adel:null}},
-  {id:'airlock',   name:'S-type airlock',               cat:'Fermenters & airlocks', unit:'/ea',p:{hoppy:1.50, kegland:1.20, beerco:1.50, quality:1.40, five:1.60, adel:null}},
-  {id:'hydrometer',name:'Hydrometer & trial jar',       cat:'Fermenters & airlocks', unit:'/ea',p:{hoppy:12.00,kegland:10.50,beerco:11.50,quality:11.00,five:13.00,adel:null}},
-  {id:'thermom',   name:'Digital thermometer',          cat:'Fermenters & airlocks', unit:'/ea',p:{hoppy:14.00,kegland:12.50,beerco:13.50,quality:13.00,five:15.00,adel:null}},
-  {id:'heatbelt',  name:'Heat belt / heat mat',         cat:'Fermenters & airlocks', unit:'/ea',p:{hoppy:28.00,kegland:24.00,beerco:27.00,quality:26.00,five:30.00,adel:null}},
-  {id:'barrel5',   name:'5L French oak barrel',         cat:'Barrels & ageing',      unit:'/ea',p:{hoppy:null, kegland:45.00,beerco:null, quality:null, five:42.00,adel:55.00}},
-  {id:'barrel10',  name:'10L French oak barrel',        cat:'Barrels & ageing',      unit:'/ea',p:{hoppy:null, kegland:65.00,beerco:null, quality:null, five:62.00,adel:75.00}},
-  {id:'demijohn',  name:'5L glass demijohn',             cat:'Barrels & ageing',      unit:'/ea',p:{hoppy:18.00,kegland:16.00,beerco:17.50,quality:17.00,five:19.00,adel:null}},
-  {id:'jar200',    name:'200ml collection jars (x10)',  cat:'Jars & bottles',        unit:'/pk',p:{hoppy:18.00,kegland:15.50,beerco:17.50,quality:16.50,five:null, adel:null}},
-  {id:'bottle750', name:'750ml spirit bottles (x12)',   cat:'Jars & bottles',        unit:'/pk',p:{hoppy:22.00,kegland:19.50,beerco:21.00,quality:20.50,five:24.00,adel:null}},
-  {id:'siphon',    name:'Auto-siphon & tubing kit',     cat:'Jars & bottles',        unit:'/ea',p:{hoppy:18.00,kegland:15.00,beerco:17.00,quality:16.50,five:19.00,adel:null}},
-  {id:'t500filter',name:'Still Spirits T500 filter',    cat:'Carbon filters',        unit:'/ea',p:{hoppy:12.00,kegland:10.50,beerco:11.50,quality:11.00,five:13.00,adel:null}},
-  {id:'actcarb1k', name:'Activated carbon 1kg',         cat:'Carbon filters',        unit:'/pk',p:{hoppy:24.00,kegland:20.00,beerco:22.50,quality:21.50,five:26.00,adel:null}},
-  {id:'tube8mm',   name:'Food grade tubing 8mm (per m)','cat':'Tubing & valves',     unit:'/m', p:{hoppy:2.50, kegland:2.10, beerco:2.40, quality:2.30, five:2.80, adel:null}},
-  {id:'ballvalve', name:'Ball valve 1/2" stainless',    cat:'Tubing & valves',       unit:'/ea',p:{hoppy:12.00,kegland:9.50, beerco:11.00,quality:10.50,five:13.00,adel:null}},
+  {id:'ferm30',    name:'30L fermenter with lid & tap', cat:'Fermenters & airlocks',unit:'/ea',p:{hoppy:28.00,kegland:24.95,beerco:27.50,quality:26.00,five:29.00,adel:null}},
+  {id:'ferm15',    name:'15L fermenter with lid',       cat:'Fermenters & airlocks',unit:'/ea',p:{hoppy:18.00,kegland:16.50,beerco:17.50,quality:17.00,five:18.50,adel:null}},
+  {id:'airlock',   name:'S-type airlock',               cat:'Fermenters & airlocks',unit:'/ea',p:{hoppy:1.50,kegland:1.20,beerco:1.50,quality:1.40,five:1.60,adel:null}},
+  {id:'hydrometer',name:'Hydrometer & trial jar',       cat:'Fermenters & airlocks',unit:'/ea',p:{hoppy:12.00,kegland:10.50,beerco:11.50,quality:11.00,five:13.00,adel:null}},
+  {id:'thermom',   name:'Digital thermometer',          cat:'Fermenters & airlocks',unit:'/ea',p:{hoppy:14.00,kegland:12.50,beerco:13.50,quality:13.00,five:15.00,adel:null}},
+  {id:'heatbelt',  name:'Heat belt / heat mat',         cat:'Fermenters & airlocks',unit:'/ea',p:{hoppy:28.00,kegland:24.00,beerco:27.00,quality:26.00,five:30.00,adel:null}},
+  {id:'barrel5',   name:'5L French oak barrel',         cat:'Barrels & ageing',     unit:'/ea',p:{hoppy:null,kegland:45.00,beerco:null,quality:null,five:42.00,adel:55.00}},
+  {id:'barrel10',  name:'10L French oak barrel',        cat:'Barrels & ageing',     unit:'/ea',p:{hoppy:null,kegland:65.00,beerco:null,quality:null,five:62.00,adel:75.00}},
+  {id:'demijohn',  name:'5L glass demijohn',             cat:'Barrels & ageing',     unit:'/ea',p:{hoppy:18.00,kegland:16.00,beerco:17.50,quality:17.00,five:19.00,adel:null}},
+  {id:'jar200',    name:'200ml collection jars (x10)',  cat:'Jars & bottles',       unit:'/pk',p:{hoppy:18.00,kegland:15.50,beerco:17.50,quality:16.50,five:null,adel:null}},
+  {id:'bottle750', name:'750ml spirit bottles (x12)',   cat:'Jars & bottles',       unit:'/pk',p:{hoppy:22.00,kegland:19.50,beerco:21.00,quality:20.50,five:24.00,adel:null}},
+  {id:'siphon',    name:'Auto-siphon & tubing kit',     cat:'Jars & bottles',       unit:'/ea',p:{hoppy:18.00,kegland:15.00,beerco:17.00,quality:16.50,five:19.00,adel:null}},
+  {id:'t500filter',name:'Still Spirits T500 filter',    cat:'Carbon filters',       unit:'/ea',p:{hoppy:12.00,kegland:10.50,beerco:11.50,quality:11.00,five:13.00,adel:null}},
+  {id:'actcarb1k', name:'Activated carbon 1kg',         cat:'Carbon filters',       unit:'/pk',p:{hoppy:24.00,kegland:20.00,beerco:22.50,quality:21.50,five:26.00,adel:null}},
+  {id:'tube8mm',   name:'Food grade tubing 8mm (per m)',cat:'Tubing & valves',      unit:'/m', p:{hoppy:2.50,kegland:2.10,beerco:2.40,quality:2.30,five:2.80,adel:null}},
+  {id:'ballvalve', name:'Ball valve 1/2" stainless',    cat:'Tubing & valves',      unit:'/ea',p:{hoppy:12.00,kegland:9.50,beerco:11.00,quality:10.50,five:13.00,adel:null}},
 ];
 const EQUIP_CATS=['Fermenters & airlocks','Barrels & ageing','Jars & bottles','Carbon filters','Tubing & valves','Custom'];
 let customEquip=[];
 
-// ── RECIPES ───────────────────────────────────────────────────────────────
-// Rum recipes — Air Still (4.5L wash)
+// ── RECIPES ────────────────────────────────────────────────────────────────
 const RUM_AIR={
-  bourbon_air:{
-    title:'Bourbon mash',stillType:'air',spirit:'rum',builtin:true,
-    desc:'65% corn · 20% rye · 12.5% distillers malt · 2.5% dark munich',
-    litres:4.5,
-    stillNote:'4.5L air still: single pass, expect ~0.5–0.7L of spirit. Keep hearts cut tight — first and last 50ml heads/tails.',
-    items:[{id:'maize',qty:0.78,lbl:'0.78 kg'},{id:'rye',qty:0.24,lbl:'0.24 kg'},{id:'malt',qty:0.15,lbl:'0.15 kg'},{id:'munich',qty:0.03,lbl:'0.03 kg'},{id:'rumyeast',qty:1,lbl:'1 pkt'}]
-  },
-  rum_air:{
-    title:'Home rum',stillType:'air',spirit:'rum',builtin:true,
-    desc:'Blackstrap molasses · brown sugar · baker\'s yeast',
-    litres:4.5,
-    stillNote:'4.5L air still: works well for rum — single pot still pass gives good congener character. Expect ~0.6L. Discard first 50ml.',
-    items:[{id:'bsmol',qty:0.6,lbl:'0.6 kg'},{id:'bsugar',qty:0.45,lbl:'0.45 kg'},{id:'yeast',qty:1,lbl:'1 pkt'}]
-  },
-  reserve_air:{
-    title:'Select reserve',stillType:'air',spirit:'rum',builtin:true,
-    desc:'Bundaberg refinery molasses · old school pantry method',
-    litres:4.5,
-    stillNote:'4.5L air still: single pass, ~0.5–0.6L yield. Refinery molasses needs time — let it ferment 10–14 days before running.',
-    items:[{id:'bundmol',qty:0.9,lbl:'0.9 kg'},{id:'yeast',qty:1,lbl:'1 pkt'}]
-  },
+  bourbon_air:{title:'Bourbon mash',stillType:'air',spirit:'rum',builtin:true,desc:'65% corn · 20% rye · 12.5% malt · 2.5% munich',litres:4.5,stillNote:'Single pass, expect ~0.6L spirit. Keep heads cut tight — discard first 50ml.',items:[{id:'maize',qty:0.78,lbl:'0.78 kg'},{id:'rye',qty:0.24,lbl:'0.24 kg'},{id:'malt',qty:0.15,lbl:'0.15 kg'},{id:'munich',qty:0.03,lbl:'0.03 kg'},{id:'rumyeast',qty:1,lbl:'1 pkt'}]},
+  rum_air:{title:'Home rum',stillType:'air',spirit:'rum',builtin:true,desc:'Blackstrap molasses · brown sugar · baker\'s yeast',litres:4.5,stillNote:'Single pot still pass gives good congener character. Expect ~0.6L. Discard first 50ml.',items:[{id:'bsmol',qty:0.6,lbl:'0.6 kg'},{id:'bsugar',qty:0.45,lbl:'0.45 kg'},{id:'yeast',qty:1,lbl:'1 pkt'}]},
+  reserve_air:{title:'Select reserve',stillType:'air',spirit:'rum',builtin:true,desc:'Bundaberg refinery molasses · old school pantry method',litres:4.5,stillNote:'~0.5–0.6L yield. Ferment 10–14 days before running. Well worth the wait.',items:[{id:'bundmol',qty:0.9,lbl:'0.9 kg'},{id:'yeast',qty:1,lbl:'1 pkt'}]},
 };
-
-// Rum recipes — Reflux Still (23L wash)
 const RUM_REFLUX={
-  bourbon_reflux:{
-    title:'Bourbon mash',stillType:'reflux',spirit:'rum',builtin:true,
-    desc:'65% corn · 20% rye · 12.5% distillers malt · 2.5% dark munich',
-    litres:23,
-    stillNote:'23L reflux still: multi-pass capable. Run as single pass for more character, or double-distil for cleaner spirit. Expect 2.5–3.5L hearts.',
-    items:[{id:'maize',qty:5.2,lbl:'5.2 kg'},{id:'rye',qty:1.6,lbl:'1.6 kg'},{id:'malt',qty:1.0,lbl:'1.0 kg'},{id:'munich',qty:0.2,lbl:'0.2 kg'},{id:'rumyeast',qty:2,lbl:'2 pkts'},{id:'dap',qty:1,lbl:'1 × 100g'}]
-  },
-  rum_reflux:{
-    title:'Home rum',stillType:'reflux',spirit:'rum',builtin:true,
-    desc:'Blackstrap molasses · brown sugar · baker\'s yeast',
-    litres:23,
-    stillNote:'23L reflux: use packing for cleaner finish or remove packing for more pot-still character. Heads ~200ml, tails from ~60% ABV drop.',
-    items:[{id:'bsmol',qty:4,lbl:'4 kg'},{id:'bsugar',qty:3,lbl:'3 kg'},{id:'yeast',qty:2,lbl:'2 pkts'},{id:'dap',qty:1,lbl:'1 × 100g'}]
-  },
-  reserve_reflux:{
-    title:'Select reserve',stillType:'reflux',spirit:'rum',builtin:true,
-    desc:'Bundaberg refinery molasses · old school pantry method',
-    litres:23,
-    stillNote:'23L reflux: single pass recommended to preserve the Bundy character. Ferment 10–14 days minimum. Add french oak chips to distillate for 2–4 weeks post-run.',
-    items:[{id:'bundmol',qty:6,lbl:'6 kg'},{id:'yeast',qty:2,lbl:'2 pkts'},{id:'froak',qty:1,lbl:'100g'}]
-  },
+  bourbon_reflux:{title:'Bourbon mash',stillType:'reflux',spirit:'rum',builtin:true,desc:'65% corn · 20% rye · 12.5% malt · 2.5% munich',litres:23,stillNote:'Run as single pass for character or double-distil for cleaner spirit. Expect 2.5–3.5L hearts.',items:[{id:'maize',qty:5.2,lbl:'5.2 kg'},{id:'rye',qty:1.6,lbl:'1.6 kg'},{id:'malt',qty:1.0,lbl:'1.0 kg'},{id:'munich',qty:0.2,lbl:'0.2 kg'},{id:'rumyeast',qty:2,lbl:'2 pkts'},{id:'dap',qty:1,lbl:'1 × 100g'}]},
+  rum_reflux:{title:'Home rum',stillType:'reflux',spirit:'rum',builtin:true,desc:'Blackstrap molasses · brown sugar · baker\'s yeast',litres:23,stillNote:'Use packing for cleaner finish or remove for pot-still character. Heads ~200ml, tails from ~60% ABV drop.',items:[{id:'bsmol',qty:4,lbl:'4 kg'},{id:'bsugar',qty:3,lbl:'3 kg'},{id:'yeast',qty:2,lbl:'2 pkts'},{id:'dap',qty:1,lbl:'1 × 100g'}]},
+  reserve_reflux:{title:'Select reserve',stillType:'reflux',spirit:'rum',builtin:true,desc:'Bundaberg refinery molasses · old school pantry method',litres:23,stillNote:'Single pass recommended to preserve the Bundy character. Add french oak to distillate for 2–4 weeks post-run.',items:[{id:'bundmol',qty:6,lbl:'6 kg'},{id:'yeast',qty:2,lbl:'2 pkts'},{id:'froak',qty:1,lbl:'100g'}]},
 };
-
-// Vodka — Air Still (4.5L)
 const VODKA_AIR={
-  vod_sugar_air:{
-    title:'Sugar wash',stillType:'air',spirit:'vodka',builtin:true,
-    desc:'Plain white sugar · EC-1118 champagne yeast · clean neutral base',
-    litres:4.5,
-    stillNote:'4.5L air still: run twice for cleaner result. First pass ~0.7L at ~40%, second pass concentrates to ~70%+. Dilute to 40% with filtered water.',
-    prosCons:{pros:'Cheapest per litre · very clean after double-run · fast ferment (5–7 days)',cons:'No flavour character · needs double-run in air still · bland if not filtered'},
-    items:[{id:'wsugar',qty:1.0,lbl:'1.0 kg'},{id:'ec1118',qty:1,lbl:'1 pkt'},{id:'dap',qty:0.5,lbl:'50g'}]
-  },
-  vod_wheat_air:{
-    title:'Wheat mash',stillType:'air',spirit:'vodka',builtin:true,
-    desc:'Flaked wheat · pale malt · champagne yeast · traditional grain character',
-    litres:4.5,
-    stillNote:'4.5L air still: grain mash needs a double-run minimum. First pass is a stripping run, second is spirit run. Expect ~0.5L final yield.',
-    prosCons:{pros:'Genuine grain character · more complex mouthfeel · closer to commercial vodka',cons:'Needs mashing step · longer process · double-run required in air still'},
-    items:[{id:'wheat',qty:0.7,lbl:'0.7 kg'},{id:'barley',qty:0.2,lbl:'0.2 kg (for enzymes)'},{id:'ec1118',qty:1,lbl:'1 pkt'},{id:'dap',qty:0.5,lbl:'50g'}]
-  },
-  vod_mixed_air:{
-    title:'Mixed grain + sugar',stillType:'air',spirit:'vodka',builtin:true,
-    desc:'Wheat mash boosted with white sugar · hybrid approach for yield and character',
-    litres:4.5,
-    stillNote:'4.5L air still: good balance of effort vs result. Sugar increases yield; grain provides flavour base. Double-run recommended.',
-    prosCons:{pros:'Higher yield than pure grain · more flavour than pure sugar · forgiving ferment',cons:'Less character than pure grain · still needs double-run · middle-of-the-road result'},
-    items:[{id:'wheat',qty:0.5,lbl:'0.5 kg'},{id:'wsugar',qty:0.5,lbl:'0.5 kg'},{id:'ec1118',qty:1,lbl:'1 pkt'},{id:'dap',qty:0.5,lbl:'50g'}]
-  },
-  vod_potato_air:{
-    title:'Potato mash',stillType:'air',spirit:'vodka',builtin:true,
-    desc:'Dehydrated potato flakes · pale malt for enzymes · creamy mouthfeel',
-    litres:4.5,
-    stillNote:'4.5L air still: potato vodka is a longer project. Triple-run is ideal for air still purity. Expect rich, slightly sweet character even after rectification.',
-    prosCons:{pros:'Distinctive creamy character · traditional Polish/Eastern European style · impressive results',cons:'Potato flakes sourcing difficult · needs triple-run in air still · lower ABV wash'},
-    items:[{id:'potato',qty:0.8,lbl:'0.8 kg'},{id:'barley',qty:0.15,lbl:'0.15 kg (enzymes)'},{id:'ec1118',qty:1,lbl:'1 pkt'},{id:'dap',qty:0.5,lbl:'50g'}]
-  },
+  vod_sugar_air:{title:'Sugar wash',stillType:'air',spirit:'vodka',builtin:true,desc:'Plain white sugar · EC-1118 · clean neutral base',litres:4.5,stillNote:'Run twice for cleaner result. First pass ~0.7L at ~40%, second concentrates to 70%+. Dilute to 40% with filtered water.',prosCons:{pros:'Cheapest per litre · fast ferment (5–7 days) · very clean after double-run',cons:'No flavour character · needs double-run in air still · bland if not filtered well'},items:[{id:'wsugar',qty:1.0,lbl:'1.0 kg'},{id:'ec1118',qty:1,lbl:'1 pkt'},{id:'dap',qty:0.5,lbl:'50g'}]},
+  vod_wheat_air:{title:'Wheat mash',stillType:'air',spirit:'vodka',builtin:true,desc:'Flaked wheat · pale malt for enzymes · traditional grain character',litres:4.5,stillNote:'Needs a double-run minimum. First pass is stripping run, second is spirit run. Expect ~0.5L final yield.',prosCons:{pros:'Genuine grain character · more complex mouthfeel · closer to commercial vodka',cons:'Needs mashing step · longer process · double-run required'},items:[{id:'wheat',qty:0.7,lbl:'0.7 kg'},{id:'barley',qty:0.2,lbl:'0.2 kg'},{id:'ec1118',qty:1,lbl:'1 pkt'},{id:'dap',qty:0.5,lbl:'50g'}]},
+  vod_mixed_air:{title:'Mixed grain + sugar',stillType:'air',spirit:'vodka',builtin:true,desc:'Wheat mash boosted with white sugar · hybrid approach',litres:4.5,stillNote:'Good balance of effort vs result. Sugar increases yield; grain provides flavour base. Double-run recommended.',prosCons:{pros:'Higher yield than pure grain · more flavour than pure sugar · forgiving ferment',cons:'Less character than pure grain · still needs double-run · middle-of-the-road'},items:[{id:'wheat',qty:0.5,lbl:'0.5 kg'},{id:'wsugar',qty:0.5,lbl:'0.5 kg'},{id:'ec1118',qty:1,lbl:'1 pkt'},{id:'dap',qty:0.5,lbl:'50g'}]},
+  vod_potato_air:{title:'Potato mash',stillType:'air',spirit:'vodka',builtin:true,desc:'Dehydrated potato flakes · pale malt for enzymes · creamy mouthfeel',litres:4.5,stillNote:'Potato vodka is a longer project. Triple-run is ideal for air still purity. Rich, slightly sweet character even after rectification.',prosCons:{pros:'Distinctive creamy character · traditional Polish style · impressive results',cons:'Potato flakes hard to source · needs triple-run in air still · lower ABV wash'},items:[{id:'potato',qty:0.8,lbl:'0.8 kg'},{id:'barley',qty:0.15,lbl:'0.15 kg'},{id:'ec1118',qty:1,lbl:'1 pkt'},{id:'dap',qty:0.5,lbl:'50g'}]},
 };
-
-// Vodka — Reflux Still (23L)
 const VODKA_REFLUX={
-  vod_sugar_reflux:{
-    title:'Sugar wash',stillType:'reflux',spirit:'vodka',builtin:true,
-    desc:'Plain white sugar · EC-1118 champagne yeast · high-efficiency single run',
-    litres:23,
-    stillNote:'23L reflux still: single pass through packing gives 85–92% ABV. Dilute to 40–45% for drinking. Very high yield — up to 3.5L from 23L wash.',
-    prosCons:{pros:'Maximum yield per dollar · single pass gives commercial-grade purity · fast and repeatable',cons:'No flavour — completely neutral · boring to drink straight · needs good filtering/dilution water'},
-    items:[{id:'wsugar',qty:5.0,lbl:'5.0 kg'},{id:'ec1118',qty:2,lbl:'2 pkts'},{id:'dap',qty:2,lbl:'2 × 100g'},{id:'fermaid',qty:1,lbl:'50g'}]
-  },
-  vod_wheat_reflux:{
-    title:'Wheat mash',stillType:'reflux',spirit:'vodka',builtin:true,
-    desc:'Flaked wheat · pale malt · traditional grain character at scale',
-    litres:23,
-    stillNote:'23L reflux still: single pass with packing. For more character, reduce reflux ratio or run without packing first 20 minutes. Expect 2.5–3L hearts at 85%+.',
-    prosCons:{pros:'Full grain character at scale · single-run capable · closer to premium commercial product',cons:'Mashing required · all-grain wash lower ABV (~8–10%) · more planning needed'},
-    items:[{id:'wheat',qty:3.5,lbl:'3.5 kg'},{id:'barley',qty:1.0,lbl:'1.0 kg (for enzymes)'},{id:'ec1118',qty:2,lbl:'2 pkts'},{id:'dap',qty:2,lbl:'2 × 100g'}]
-  },
-  vod_mixed_reflux:{
-    title:'Mixed grain + sugar',stillType:'reflux',spirit:'vodka',builtin:true,
-    desc:'Wheat mash + white sugar top-up · best bang for buck at 23L scale',
-    litres:23,
-    stillNote:'23L reflux still: single pass. Aim for 12–14% wash ABV. Gives good balance of yield and character. Best everyday workhorse recipe for the reflux.',
-    prosCons:{pros:'High yield (3–3.5L) · genuine grain notes · simple ferment · cost-effective',cons:'Slightly less character than pure grain · purists would disagree · not competition-grade'},
-    items:[{id:'wheat',qty:2.5,lbl:'2.5 kg'},{id:'wsugar',qty:2.0,lbl:'2.0 kg'},{id:'ec1118',qty:2,lbl:'2 pkts'},{id:'dap',qty:2,lbl:'2 × 100g'}]
-  },
-  vod_potato_reflux:{
-    title:'Potato mash',stillType:'reflux',spirit:'vodka',builtin:true,
-    desc:'Dehydrated potato flakes · pale malt for enzymes · Polish-style at scale',
-    litres:23,
-    stillNote:'23L reflux still: single run gives excellent purity while retaining the creamy potato character. Reduce reflux slightly to preserve signature mouthfeel.',
-    prosCons:{pros:'Outstanding mouthfeel · impressive distinctive style · single-run capable at 23L',cons:'Potato flakes hard to source and expensive · lower wash ABV · gelatinisation step required'},
-    items:[{id:'potato',qty:4.0,lbl:'4.0 kg'},{id:'barley',qty:0.75,lbl:'0.75 kg (enzymes)'},{id:'ec1118',qty:2,lbl:'2 pkts'},{id:'dap',qty:2,lbl:'2 × 100g'}]
-  },
+  vod_sugar_reflux:{title:'Sugar wash',stillType:'reflux',spirit:'vodka',builtin:true,desc:'White sugar · EC-1118 · high-efficiency single run',litres:23,stillNote:'Single pass through packing gives 85–92% ABV. Dilute to 40–45% for drinking. Up to 3.5L yield from 23L wash.',prosCons:{pros:'Maximum yield per dollar · single pass gives commercial-grade purity · fast and repeatable',cons:'Completely neutral — no flavour · boring to drink straight · needs good filtering and dilution water'},items:[{id:'wsugar',qty:5.0,lbl:'5.0 kg'},{id:'ec1118',qty:2,lbl:'2 pkts'},{id:'dap',qty:2,lbl:'2 × 100g'},{id:'fermaid',qty:1,lbl:'50g'}]},
+  vod_wheat_reflux:{title:'Wheat mash',stillType:'reflux',spirit:'vodka',builtin:true,desc:'Flaked wheat · pale malt · traditional grain character at scale',litres:23,stillNote:'Single pass with packing. For more character, reduce reflux ratio slightly. Expect 2.5–3L hearts at 85%+.',prosCons:{pros:'Full grain character at scale · single-run capable · closest to premium commercial product',cons:'Mashing required · all-grain wash lower ABV (8–10%) · more planning needed'},items:[{id:'wheat',qty:3.5,lbl:'3.5 kg'},{id:'barley',qty:1.0,lbl:'1.0 kg'},{id:'ec1118',qty:2,lbl:'2 pkts'},{id:'dap',qty:2,lbl:'2 × 100g'}]},
+  vod_mixed_reflux:{title:'Mixed grain + sugar',stillType:'reflux',spirit:'vodka',builtin:true,desc:'Wheat mash + white sugar · best bang for buck at 23L',litres:23,stillNote:'Aim for 12–14% wash ABV. Good balance of yield and character. Best everyday workhorse recipe for the reflux.',prosCons:{pros:'High yield (3–3.5L) · genuine grain notes · simple ferment · cost-effective',cons:'Slightly less character than pure grain · not competition-grade'},items:[{id:'wheat',qty:2.5,lbl:'2.5 kg'},{id:'wsugar',qty:2.0,lbl:'2.0 kg'},{id:'ec1118',qty:2,lbl:'2 pkts'},{id:'dap',qty:2,lbl:'2 × 100g'}]},
+  vod_potato_reflux:{title:'Potato mash',stillType:'reflux',spirit:'vodka',builtin:true,desc:'Potato flakes · pale malt for enzymes · Polish-style at scale',litres:23,stillNote:'Single run gives excellent purity while retaining the creamy potato character. Reduce reflux slightly to preserve mouthfeel.',prosCons:{pros:'Outstanding mouthfeel · impressive distinctive style · single-run capable at 23L',cons:'Potato flakes expensive and hard to source · lower wash ABV · gelatinisation step required'},items:[{id:'potato',qty:4.0,lbl:'4.0 kg'},{id:'barley',qty:0.75,lbl:'0.75 kg'},{id:'ec1118',qty:2,lbl:'2 pkts'},{id:'dap',qty:2,lbl:'2 × 100g'}]},
 };
-
-// Gin — Air Still (4.5L)
 const GIN_AIR={
-  gin_sugarneutral_air:{
-    title:'Sugar wash botanical',stillType:'air',spirit:'gin',builtin:true,
-    desc:'Neutral sugar wash base · juniper forward · simple botanical basket',
-    litres:4.5,
-    stillNote:'4.5L air still: place botanicals in a muslin bag in the boiler or suspend above in the column if your still supports it. Single run, ~0.5L yield. Redistil the neutral spirit rather than adding botanicals direct to wash.',
-    prosCons:{pros:'Cheapest and simplest · fast to produce · good for experimenting with botanical ratios',cons:'Lacks depth — thin mouthfeel · needs a pre-made neutral base (double-run sugar wash) · not complex'},
-    items:[{id:'wsugar',qty:1.0,lbl:'1.0 kg (for base wash)'},{id:'ec1118',qty:1,lbl:'1 pkt'},{id:'juniper',qty:2,lbl:'100g'},{id:'coriandr',qty:1,lbl:'50g'},{id:'angelica',qty:0.5,lbl:'25g'},{id:'orispeel',qty:0.5,lbl:'25g'}]
-  },
-  gin_grain_air:{
-    title:'Grain base botanical',stillType:'air',spirit:'gin',builtin:true,
-    desc:'Wheat mash base · fuller botanical expression · more body',
-    litres:4.5,
-    stillNote:'4.5L air still: strip the wheat wash first (stripping run), then redistil with botanicals on the second pass. Expect ~0.4–0.5L of gin with genuine body.',
-    prosCons:{pros:'Much better mouthfeel than sugar base · botanicals carry better on a grain spirit · more interesting',cons:'Two-run process — slower · more expensive ingredients · more planning required'},
-    items:[{id:'wheat',qty:0.7,lbl:'0.7 kg'},{id:'barley',qty:0.2,lbl:'0.2 kg'},{id:'ec1118',qty:1,lbl:'1 pkt'},{id:'juniper',qty:2,lbl:'100g'},{id:'coriandr',qty:1,lbl:'50g'},{id:'angelica',qty:0.5,lbl:'25g'},{id:'lempeel',qty:0.5,lbl:'25g'},{id:'cardamom',qty:0.5,lbl:'25g'}]
-  },
-  gin_redistil_air:{
-    title:'London Dry (redistil)',stillType:'air',spirit:'gin',builtin:true,
-    desc:'Redistil existing neutral spirit with botanicals · classic approach',
-    litres:4.5,
-    stillNote:'4.5L air still: dilute your neutral spirit (from previous run) back to ~30% ABV, add botanicals, macerate 12–24hrs, then redistil. This IS the London Dry method. Yield ~0.4–0.5L at 65–75%.',
-    prosCons:{pros:'Classic London Dry style · full control over botanical expression · uses your existing neutral stock',cons:'Requires pre-made neutral spirit · two separate production runs · slower overall'},
-    items:[{id:'juniper',qty:2,lbl:'100g'},{id:'coriandr',qty:1,lbl:'50g'},{id:'angelica',qty:0.5,lbl:'25g'},{id:'orispeel',qty:0.5,lbl:'25g'},{id:'cassia',qty:0.5,lbl:'25g'},{id:'cubeb',qty:0.5,lbl:'25g'}]
-  },
-  gin_compound_air:{
-    title:'Compound gin (cold mac)',stillType:'air',spirit:'gin',builtin:true,
-    desc:'No redistillation · macerate botanicals in neutral spirit cold · no still required',
-    litres:4.5,
-    stillNote:'No still run needed for this method — macerate botanicals in neutral spirit (40–50% ABV) for 24–72hrs, then filter. Can be done in a jar. Air still not required but can be used to make the base neutral first.',
-    prosCons:{pros:'Fastest method — no distillation of gin required · adjustable flavour in real time · great for experimenting',cons:'Legally not "gin" in most jurisdictions · harsher botanical extraction can be bitter · no heat to drive off harsh notes · quality ceiling lower than distilled'},
-    items:[{id:'juniper',qty:2,lbl:'100g'},{id:'coriandr',qty:1,lbl:'50g'},{id:'orispeel',qty:1,lbl:'50g'},{id:'lempeel',qty:0.5,lbl:'25g'},{id:'cardamom',qty:0.5,lbl:'25g'},{id:'cassia',qty:0.5,lbl:'25g'}]
-  },
+  gin_sugarneutral_air:{title:'Sugar wash botanical',stillType:'air',spirit:'gin',builtin:true,desc:'Neutral sugar wash base · juniper forward · simple botanical basket',litres:4.5,stillNote:'Place botanicals in a muslin bag in the boiler. Redistil your neutral spirit (30% ABV) rather than adding botanicals direct to wash. ~0.5L yield.',prosCons:{pros:'Cheapest and simplest · fast to produce · great for testing botanical ratios',cons:'Thin mouthfeel · needs a pre-made neutral base · lacks depth'},items:[{id:'wsugar',qty:1.0,lbl:'1.0 kg (base wash)'},{id:'ec1118',qty:1,lbl:'1 pkt'},{id:'juniper',qty:2,lbl:'100g'},{id:'coriandr',qty:1,lbl:'50g'},{id:'angelica',qty:0.5,lbl:'25g'},{id:'orispeel',qty:0.5,lbl:'25g'}]},
+  gin_grain_air:{title:'Grain base botanical',stillType:'air',spirit:'gin',builtin:true,desc:'Wheat mash base · fuller botanical expression · more body',litres:4.5,stillNote:'Strip the wheat wash first (stripping run), then redistil with botanicals on the second pass. Expect ~0.4–0.5L with genuine body.',prosCons:{pros:'Much better mouthfeel · botanicals carry better on grain · more interesting result',cons:'Two-run process · more expensive · more planning required'},items:[{id:'wheat',qty:0.7,lbl:'0.7 kg'},{id:'barley',qty:0.2,lbl:'0.2 kg'},{id:'ec1118',qty:1,lbl:'1 pkt'},{id:'juniper',qty:2,lbl:'100g'},{id:'coriandr',qty:1,lbl:'50g'},{id:'angelica',qty:0.5,lbl:'25g'},{id:'lempeel',qty:0.5,lbl:'25g'},{id:'cardamom',qty:0.5,lbl:'25g'}]},
+  gin_redistil_air:{title:'London Dry (redistil)',stillType:'air',spirit:'gin',builtin:true,desc:'Redistil neutral spirit with botanicals · classic London Dry approach',litres:4.5,stillNote:'Dilute neutral spirit back to ~30% ABV, macerate botanicals 12–24hrs, then redistil. This IS the London Dry method. Yield ~0.4–0.5L at 65–75%.',prosCons:{pros:'Classic London Dry style · full control over botanical expression · uses your existing neutral stock',cons:'Requires pre-made neutral spirit · two separate production runs · slower overall'},items:[{id:'juniper',qty:2,lbl:'100g'},{id:'coriandr',qty:1,lbl:'50g'},{id:'angelica',qty:0.5,lbl:'25g'},{id:'orispeel',qty:0.5,lbl:'25g'},{id:'cassia',qty:0.5,lbl:'25g'},{id:'cubeb',qty:0.5,lbl:'25g'}]},
+  gin_compound_air:{title:'Compound gin (cold mac)',stillType:'air',spirit:'gin',builtin:true,desc:'No redistillation · macerate botanicals cold in neutral spirit',litres:4.5,stillNote:'No still run needed — macerate botanicals in neutral spirit (40–50% ABV) for 24–72hrs then filter. Air still used to make the base neutral first.',prosCons:{pros:'Fastest method · adjustable flavour in real time · great for experimenting',cons:'Not legally "gin" in most jurisdictions · bitterness risk · quality ceiling lower than distilled'},items:[{id:'juniper',qty:2,lbl:'100g'},{id:'coriandr',qty:1,lbl:'50g'},{id:'orispeel',qty:1,lbl:'50g'},{id:'lempeel',qty:0.5,lbl:'25g'},{id:'cardamom',qty:0.5,lbl:'25g'},{id:'cassia',qty:0.5,lbl:'25g'}]},
 };
-
-// Gin — Reflux Still (23L)
 const GIN_REFLUX={
-  gin_sugarneutral_reflux:{
-    title:'Sugar wash botanical',stillType:'reflux',spirit:'gin',builtin:true,
-    desc:'Neutral sugar wash base · juniper forward · single pass at scale',
-    litres:23,
-    stillNote:'23L reflux still: distil the sugar wash to neutral first (85%+ ABV), dilute back to 30%, macerate botanicals 12–24hrs, then redistil. Or use a copper botanical basket in the column. Yield ~2.5L of gin.',
-    prosCons:{pros:'High yield · cost-effective · clean and consistent · good for large batches',cons:'Thin mouthfeel · less interesting than grain base · won\'t win competitions but good everyday gin'},
-    items:[{id:'wsugar',qty:5.0,lbl:'5.0 kg'},{id:'ec1118',qty:2,lbl:'2 pkts'},{id:'dap',qty:2,lbl:'2 × 100g'},{id:'juniper',qty:4,lbl:'200g'},{id:'coriandr',qty:2,lbl:'100g'},{id:'angelica',qty:1,lbl:'50g'},{id:'orispeel',qty:1,lbl:'50g'}]
-  },
-  gin_grain_reflux:{
-    title:'Grain base botanical',stillType:'reflux',spirit:'gin',builtin:true,
-    desc:'Wheat mash base · fuller botanical expression · premium quality at scale',
-    litres:23,
-    stillNote:'23L reflux still: strip wheat wash, then redistil with botanicals. Reduce reflux ratio during botanical run to carry more flavour. Expect 2–2.5L of excellent gin.',
-    prosCons:{pros:'Best quality output · full body and botanical complexity · closest to premium commercial gin',cons:'Two-run process · all-grain mashing required · most time and effort intensive option'},
-    items:[{id:'wheat',qty:3.5,lbl:'3.5 kg'},{id:'barley',qty:1.0,lbl:'1.0 kg'},{id:'ec1118',qty:2,lbl:'2 pkts'},{id:'juniper',qty:4,lbl:'200g'},{id:'coriandr',qty:2,lbl:'100g'},{id:'angelica',qty:1,lbl:'50g'},{id:'lempeel',qty:1,lbl:'50g'},{id:'cardamom',qty:1,lbl:'50g'},{id:'cubeb',qty:0.5,lbl:'25g'}]
-  },
-  gin_redistil_reflux:{
-    title:'London Dry (redistil)',stillType:'reflux',spirit:'gin',builtin:true,
-    desc:'Redistil neutral spirit with botanicals · London Dry method at full scale',
-    litres:23,
-    stillNote:'23L reflux still: dilute existing neutral to ~30% ABV to fill boiler, macerate botanicals 12–24hrs cold, then redistil at reduced reflux. This is the proper London Dry process. Yield 2.5–3L at 65–75% ABV.',
-    prosCons:{pros:'Proper London Dry method · excellent botanical integration · full still capacity used · clean and refined',cons:'Requires large pre-made neutral stock · planning ahead essential · two separate production cycles'},
-    items:[{id:'juniper',qty:4,lbl:'200g'},{id:'coriandr',qty:2,lbl:'100g'},{id:'angelica',qty:1,lbl:'50g'},{id:'orispeel',qty:1,lbl:'50g'},{id:'cassia',qty:1,lbl:'50g'},{id:'cubeb',qty:1,lbl:'50g'},{id:'cardamom',qty:1,lbl:'50g'}]
-  },
-  gin_compound_reflux:{
-    title:'Compound gin (cold mac)',stillType:'reflux',spirit:'gin',builtin:true,
-    desc:'Cold maceration in large neutral batch · fast production at volume',
-    litres:23,
-    stillNote:'No still run for the gin itself — use 23L of pre-made neutral spirit (from reflux still) as the base. Macerate botanicals 24–72hrs then fine filter. Produces ~20L of compound gin at drinking strength.',
-    prosCons:{pros:'Massive yield with zero gin distillation time · highly adjustable · botanical tweaking easy',cons:'Not legally distilled gin · bitterness risk if over-macerated · quality ceiling lower than pot/column distilled'},
-    items:[{id:'juniper',qty:6,lbl:'300g'},{id:'coriandr',qty:3,lbl:'150g'},{id:'orispeel',qty:2,lbl:'100g'},{id:'lempeel',qty:1,lbl:'50g'},{id:'cardamom',qty:1,lbl:'50g'},{id:'cassia',qty:1,lbl:'50g'}]
-  },
+  gin_sugarneutral_reflux:{title:'Sugar wash botanical',stillType:'reflux',spirit:'gin',builtin:true,desc:'Neutral sugar wash base · single pass at scale',litres:23,stillNote:'Distil sugar wash to neutral first (85%+ ABV), dilute to 30%, macerate botanicals 12–24hrs, then redistil. Or use a copper botanical basket in the column. Yield ~2.5L.',prosCons:{pros:'High yield · cost-effective · clean and consistent · good for large batches',cons:'Thin mouthfeel · less interesting than grain base · won\'t win competitions but solid everyday gin'},items:[{id:'wsugar',qty:5.0,lbl:'5.0 kg'},{id:'ec1118',qty:2,lbl:'2 pkts'},{id:'dap',qty:2,lbl:'2 × 100g'},{id:'juniper',qty:4,lbl:'200g'},{id:'coriandr',qty:2,lbl:'100g'},{id:'angelica',qty:1,lbl:'50g'},{id:'orispeel',qty:1,lbl:'50g'}]},
+  gin_grain_reflux:{title:'Grain base botanical',stillType:'reflux',spirit:'gin',builtin:true,desc:'Wheat mash base · premium quality botanical gin at scale',litres:23,stillNote:'Strip wheat wash, then redistil with botanicals. Reduce reflux ratio during botanical run to carry more flavour. Expect 2–2.5L of excellent gin.',prosCons:{pros:'Best quality output · full body and botanical complexity · closest to premium commercial gin',cons:'Two-run process · all-grain mashing required · most time and effort intensive'},items:[{id:'wheat',qty:3.5,lbl:'3.5 kg'},{id:'barley',qty:1.0,lbl:'1.0 kg'},{id:'ec1118',qty:2,lbl:'2 pkts'},{id:'juniper',qty:4,lbl:'200g'},{id:'coriandr',qty:2,lbl:'100g'},{id:'angelica',qty:1,lbl:'50g'},{id:'lempeel',qty:1,lbl:'50g'},{id:'cardamom',qty:1,lbl:'50g'},{id:'cubeb',qty:0.5,lbl:'25g'}]},
+  gin_redistil_reflux:{title:'London Dry (redistil)',stillType:'reflux',spirit:'gin',builtin:true,desc:'Redistil neutral spirit with botanicals · proper London Dry at full scale',litres:23,stillNote:'Dilute existing neutral to ~30% ABV, macerate botanicals 12–24hrs, then redistil at reduced reflux. Yield 2.5–3L at 65–75% ABV.',prosCons:{pros:'Proper London Dry method · excellent botanical integration · clean and refined',cons:'Requires large pre-made neutral stock · two separate production cycles · planning essential'},items:[{id:'juniper',qty:4,lbl:'200g'},{id:'coriandr',qty:2,lbl:'100g'},{id:'angelica',qty:1,lbl:'50g'},{id:'orispeel',qty:1,lbl:'50g'},{id:'cassia',qty:1,lbl:'50g'},{id:'cubeb',qty:1,lbl:'50g'},{id:'cardamom',qty:1,lbl:'50g'}]},
+  gin_compound_reflux:{title:'Compound gin (cold mac)',stillType:'reflux',spirit:'gin',builtin:true,desc:'Cold maceration in large neutral batch · fast production at volume',litres:23,stillNote:'Use 23L of pre-made neutral spirit as the base. Macerate botanicals 24–72hrs then fine filter. Produces ~20L of compound gin at drinking strength.',prosCons:{pros:'Massive yield · zero gin distillation time · highly adjustable · botanical tweaking easy',cons:'Not legally distilled gin · bitterness risk if over-macerated · quality ceiling lower than distilled'},items:[{id:'juniper',qty:6,lbl:'300g'},{id:'coriandr',qty:3,lbl:'150g'},{id:'orispeel',qty:2,lbl:'100g'},{id:'lempeel',qty:1,lbl:'50g'},{id:'cardamom',qty:1,lbl:'50g'},{id:'cassia',qty:1,lbl:'50g'}]},
 };
 
 // ── STATE ─────────────────────────────────────────────────────────────────
 let activeSpirit='rum';
-let activeRumStill='air',activeRumTab='bourbon_air';
-let activeVodkaStill='air',activeVodkaTab='vod_sugar_air';
-let activeGinStill='air',activeGinTab='gin_sugarneutral_air';
-let customRecipes={};
+let activeRumStill='air', activeRumTab='bourbon_air';
+let activeVodkaStill='air', activeVodkaTab='vod_sugar_air';
+let activeGinStill='air', activeGinTab='gin_sugarneutral_air';
 let pendingRecipe=null;
 
-// ── HELPERS ────────────────────────────────────────────────────────────────
 function ingById(id){return INGS.find(i=>i.id===id);}
 function fmt(n){return n==null?'—':'$'+n.toFixed(2);}
-function fmtF(n){return n===0?'Free ship':'+ $'+n.toFixed(2)+' freight';}
+function fmtF(n){return n===0?'Free shipping':'+ $'+n.toFixed(2)+' freight';}
 function allEquip(){return[...BUILTIN_EQUIP,...customEquip];}
 function bestLanded(item){let b=null,bc=Infinity;SUPS.forEach(s=>{const p=item.p[s.id];if(p!=null){const l=p+freight(s.id,p);if(l<bc){bc=l;b=s.id;}}});return b;}
 
-function recipeTotals(items,litres){
+function recipeTotals(items){
   const totals={};
   SUPS.forEach(s=>{
     let t=0,ok=true;
@@ -541,78 +827,54 @@ function recipeTotals(items,litres){
   return{totals,best};
 }
 
-// ── RECIPE HTML BUILDER ────────────────────────────────────────────────────
-function buildRecipeHTML(recipe){
-  const{totals,best}=recipeTotals(recipe.items,recipe.litres);
-  const stillLabel=recipe.stillType==='air'?'4.5L Air Still':'23L Reflux Still';
-  const stillClass=recipe.stillType==='air'?'air':'reflux';
+function buildRecipeHTML(r){
+  const{totals,best}=recipeTotals(r.items);
+  const stillLabel=r.stillType==='air'?'4.5L Air Still':'23L Reflux Still';
+  const stillClass=r.stillType==='air'?'air':'reflux';
+  const noteClass=r.spirit==='vodka'?'vodka-note':r.spirit==='gin'?'gin-note':'';
 
   let ih='';
-  recipe.items.forEach(it=>{
+  r.items.forEach(it=>{
     const i=ingById(it.id);
-    if(!i){ih+=`<div class="ing-row"><div class="ing-left"><div class="ing-name">${it.id}</div><div class="ing-sub">${it.lbl}</div></div><div class="price-tags"><span class="ptag unknown">Not priced</span></div></div>`;return;}
+    if(!i){ih+=`<div class="ing-row"><div class="ing-left"><div class="ing-name">${it.id}</div><div class="ing-qty">${it.lbl}</div></div><div class="price-tags"><span class="ptag unknown">Not priced</span></div></div>`;return;}
     let b=null,bc=Infinity;
     SUPS.forEach(s=>{const p=i.p[s.id];if(p!=null&&p*it.qty<bc){bc=p*it.qty;b=s.id;}});
     let tags='';
-    SUPS.forEach(s=>{const p=i.p[s.id];if(p==null)return;tags+=`<span class="ptag ${s.id===b?'best':''}">${s.short}: ${fmt(p*it.qty)}</span>`;});
-    ih+=`<div class="ing-row"><div class="ing-left"><div class="ing-name">${i.name}</div><div class="ing-sub">${it.lbl}</div></div><div class="price-tags">${tags||'<span class="ptag unknown">Not priced</span>'}</div></div>`;
+    SUPS.forEach(s=>{const p=i.p[s.id];if(p==null)return;tags+=`<span class="ptag${s.id===b?' best':''}">${s.short}: ${fmt(p*it.qty)}</span>`;});
+    ih+=`<div class="ing-row"><div class="ing-left"><div class="ing-name">${i.name}</div><div class="ing-qty">${it.lbl}</div></div><div class="price-tags">${tags||'<span class="ptag unknown">Not priced</span>'}</div></div>`;
   });
 
-  // Pro/con block for vodka/gin
   let pcHTML='';
-  if(recipe.prosCons){
-    pcHTML=`<div class="pro-con">
-      <div class="pro-box"><strong>✓ Pros</strong>${recipe.prosCons.pros}</div>
-      <div class="con-box"><strong>✗ Cons</strong>${recipe.prosCons.cons}</div>
-    </div>`;
+  if(r.prosCons){
+    pcHTML=`<div class="pro-con"><div class="pro-box"><strong>✓ Pros</strong>${r.prosCons.pros}</div><div class="con-box"><strong>✗ Cons</strong>${r.prosCons.cons}</div></div>`;
   }
 
   let th='';
   SUPS.forEach(s=>{
     const v=totals[s.id];if(v==null)return;
     const isBest=s.id===best;
-    th+=`<div class="sup-card ${isBest?'best-s':''}"><div class="sname">${s.name}${isBest?' ✓':''}</div><div class="samount">${fmt(v.total)}</div><div class="sfreight">${fmtF(v.freight)}</div><div class="spl">Products: ${fmt(v.products)} · ${fmt(v.total/recipe.litres)}/L wash</div></div>`;
+    th+=`<div class="sup-card${isBest?' best-s':''}"><div class="sname">${s.name}${isBest?'<span class="best-chip">best</span>':''}</div><div class="samount">${fmt(v.total)}</div><div class="sfreight">${fmtF(v.freight)}</div><div class="spl">${fmt(v.products)} products · ${fmt(v.total/r.litres)}/L</div></div>`;
   });
 
   return `<div class="card">
-    <h2>${recipe.title} <span class="still-badge ${stillClass}">${stillLabel}</span></h2>
-    <p class="desc">${recipe.desc}</p>
-    ${recipe.stillNote?`<div class="still-info">${recipe.stillNote}</div>`:''}
+    <div class="card-title">${r.title} <span class="still-badge badge-${stillClass}">${stillLabel}</span></div>
+    <div class="card-desc">${r.desc}</div>
+    ${r.stillNote?`<div class="still-note ${noteClass}">💡 ${r.stillNote}</div>`:''}
     ${pcHTML}
     ${ih}
   </div>
-  <p class="sec-title">Landed cost by supplier</p>
+  <div class="sec-label">Landed cost by supplier</div>
   <div class="totals-grid">${th||'<p class="footnote">No supplier stocks all ingredients.</p>'}</div>
-  <p class="footnote">Freight applied automatically. ${recipe.litres}L wash basis.</p>`;
+  <p class="footnote">Freight applied automatically · ${r.litres}L wash basis</p>`;
 }
 
-// ── RENDER SPIRITS ─────────────────────────────────────────────────────────
 function getRecipeSet(spirit,still){
-  const sets={
-    rum:{air:RUM_AIR,reflux:RUM_REFLUX},
-    vodka:{air:VODKA_AIR,reflux:VODKA_REFLUX},
-    gin:{air:GIN_AIR,reflux:GIN_REFLUX},
-  };
-  return sets[spirit]?sets[spirit][still]||{}:{};
+  const sets={rum:{air:RUM_AIR,reflux:RUM_REFLUX},vodka:{air:VODKA_AIR,reflux:VODKA_REFLUX},gin:{air:GIN_AIR,reflux:GIN_REFLUX}};
+  return sets[spirit]?.[still]||{};
 }
-
-function getActiveTab(spirit){
-  if(spirit==='rum')return activeRumTab;
-  if(spirit==='vodka')return activeVodkaTab;
-  if(spirit==='gin')return activeGinTab;
-  return null;
-}
-function setActiveTab(spirit,key){
-  if(spirit==='rum')activeRumTab=key;
-  if(spirit==='vodka')activeVodkaTab=key;
-  if(spirit==='gin')activeGinTab=key;
-}
-function getActiveStill(spirit){
-  if(spirit==='rum')return activeRumStill;
-  if(spirit==='vodka')return activeVodkaStill;
-  if(spirit==='gin')return activeGinStill;
-  return 'air';
-}
+function getActiveTab(spirit){return spirit==='rum'?activeRumTab:spirit==='vodka'?activeVodkaTab:activeGinTab;}
+function setActiveTab(spirit,key){if(spirit==='rum')activeRumTab=key;else if(spirit==='vodka')activeVodkaTab=key;else activeGinTab=key;}
+function getActiveStill(spirit){return spirit==='rum'?activeRumStill:spirit==='vodka'?activeVodkaStill:activeGinStill;}
 
 function renderSpiritSection(spirit){
   const still=getActiveStill(spirit);
@@ -621,18 +883,14 @@ function renderSpiritSection(spirit){
   const tabsEl=document.getElementById(spirit+'-tabs');
   const panelsEl=document.getElementById(spirit+'-panels');
   if(!tabsEl||!panelsEl)return;
-
-  tabsEl.innerHTML='';
-  panelsEl.innerHTML='';
-
+  tabsEl.innerHTML='';panelsEl.innerHTML='';
   Object.entries(recipes).forEach(([key,r])=>{
     const isActive=key===activeTab;
     const tab=document.createElement('div');
-    tab.className='tab'+(isActive?' active':'');
+    tab.className=`tab${isActive?' active-'+spirit:''}`;
     tab.textContent=r.title;
     tab.onclick=()=>switchSpiritTab(spirit,key);
     tabsEl.appendChild(tab);
-
     const panel=document.createElement('div');
     panel.id=`panel-${spirit}-${key}`;
     panel.className='panel'+(isActive?' active':'');
@@ -646,14 +904,14 @@ function switchSpiritTab(spirit,key){
   const still=getActiveStill(spirit);
   const recipes=getRecipeSet(spirit,still);
   document.querySelectorAll(`#${spirit}-tabs .tab`).forEach((t,i)=>{
-    t.classList.toggle('active',Object.keys(recipes)[i]===key);
+    const k=Object.keys(recipes)[i];
+    t.className=`tab${k===key?' active-'+spirit:''}`;
   });
   document.querySelectorAll(`#${spirit}-panels .panel`).forEach(p=>p.classList.remove('active'));
   const el=document.getElementById(`panel-${spirit}-${key}`);
   if(el)el.classList.add('active');
 }
 
-// ── STILL SWITCHING ────────────────────────────────────────────────────────
 function switchRumStill(still){
   activeRumStill=still;
   activeRumTab=still==='air'?'bourbon_air':'bourbon_reflux';
@@ -676,21 +934,15 @@ function switchGinStill(still){
   renderSpiritSection('gin');
 }
 
-// ── TOP-LEVEL SECTION SWITCHING ────────────────────────────────────────────
 function switchSpirit(name){
   activeSpirit=name;
   ['rum','vodka','gin','equipment','freight','prices'].forEach(s=>{
     const sec=document.getElementById('section-'+s);
     if(sec)sec.style.display=s===name?'block':'none';
   });
-  // Update nav button active classes
-  document.querySelectorAll('.spirit-btn').forEach(btn=>{
-    // Remove all active-* classes
-    btn.className='spirit-btn';
-  });
-  const activeBtn=document.getElementById('snav-'+name);
-  if(activeBtn)activeBtn.classList.add('active-'+name);
-
+  document.querySelectorAll('.spirit-btn').forEach(btn=>btn.className='spirit-btn');
+  const ab=document.getElementById('snav-'+name);
+  if(ab)ab.classList.add('active-'+name);
   if(name==='rum'){renderSpiritSection('rum');switchRumStill(activeRumStill);}
   if(name==='vodka'){renderSpiritSection('vodka');switchVodkaStill(activeVodkaStill);}
   if(name==='gin'){renderSpiritSection('gin');switchGinStill(activeGinStill);}
@@ -699,16 +951,15 @@ function switchSpirit(name){
   if(name==='prices')renderPricesPanel();
 }
 
-// ── EQUIPMENT ──────────────────────────────────────────────────────────────
 function renderEquipPanel(){
   const panel=document.getElementById('equip-panel');
   const catOpts=EQUIP_CATS.map(c=>`<option value="${c}">${c}</option>`).join('');
-  let html=`<div class="add-equip-bar"><h3>Add equipment item</h3><div class="add-equip-fields"><input class="add-equip-name" type="text" id="eq-name" placeholder="Item name (e.g. Refractometer)"><select id="eq-cat">${catOpts}</select><input type="text" id="eq-unit" placeholder="Unit e.g. /ea" value="/ea"></div><button class="add-equip-btn" onclick="addCustomEquip()">Add item — supplier search links appear instantly</button></div>`;
+  let html=`<div class="add-bar"><h3>Add equipment item</h3><div class="add-fields"><input class="full-col" type="text" id="eq-name" placeholder="Item name (e.g. Refractometer)"><select id="eq-cat">${catOpts}</select><input type="text" id="eq-unit" placeholder="Unit e.g. /ea" value="/ea"></div><button class="add-btn" onclick="addCustomEquip()">Add item — supplier search links appear instantly</button></div>`;
   const groups={};
   allEquip().forEach(item=>{const cat=item.cat||'Custom';if(!groups[cat])groups[cat]=[];groups[cat].push(item);});
   EQUIP_CATS.forEach(cat=>{
     const items=groups[cat];if(!items||!items.length)return;
-    html+=`<div class="card"><h2>${cat}</h2><p class="desc">Landed cost inc. freight · tap Search to check current price</p>`;
+    html+=`<div class="card"><div class="card-title">${cat}</div><div class="card-desc">Landed cost inc. freight · tap Search to check current price</div>`;
     items.forEach(item=>{
       const best=bestLanded(item);const isCustom=!!item.custom;
       const st=encodeURIComponent(item.name);
@@ -718,7 +969,7 @@ function renderEquipPanel(){
         const f=p!=null?freight(s.id,p):0;
         const landed=p!=null?p+f:null;
         const isBest=s.id===best&&landed!=null;
-        rows+=`<div class="sup-price-row ${isBest?'best-row':''}">
+        rows+=`<div class="sup-price-row${isBest?' best-row':''}">
           <span class="sup-label">${s.short}${isBest?' ✓':''}</span>
           <a href="${s.search+st}" target="_blank" class="search-link">Search</a>
           <input type="number" class="price-input" step="0.01" min="0" value="${p!=null?p:''}" placeholder="—" oninput="updEquipPrice('${item.id}','${s.id}',this.value)">
@@ -726,7 +977,7 @@ function renderEquipPanel(){
           ${isBest?'<span class="best-badge">best</span>':''}
         </div>`;
       });
-      html+=`<div class="equip-item-card"><div class="equip-item-header"><div><div class="equip-item-name">${item.name}</div><div class="equip-item-meta">${item.unit}${isCustom?' · custom':''}</div></div>${isCustom?`<button class="del-btn" onclick="delCustomEquip('${item.id}')">Remove</button>`:''}</div>${rows}</div>`;
+      html+=`<div class="equip-card"><div class="equip-header"><div><div class="equip-name">${item.name}</div><div class="equip-meta">${item.unit}${isCustom?' · custom':''}</div></div>${isCustom?`<button class="del-btn" onclick="delCustomEquip('${item.id}')">Remove</button>`:''}</div>${rows}</div>`;
     });
     html+=`</div>`;
   });
@@ -744,73 +995,69 @@ function addCustomEquip(){
 }
 function delCustomEquip(id){if(!confirm('Remove this item?'))return;customEquip=customEquip.filter(i=>i.id!==id);renderEquipPanel();}
 function updEquipPrice(itemId,supId,val){
-  const price=(val==='')?null:(parseFloat(val)||null);
+  const price=val===''?null:(parseFloat(val)||null);
   const bi=BUILTIN_EQUIP.find(i=>i.id===itemId);
   if(bi)bi.p[supId]=price;
   else{const ci=customEquip.find(i=>i.id===itemId);if(ci)ci.p[supId]=price;}
   renderEquipPanel();
 }
 
-// ── FREIGHT ────────────────────────────────────────────────────────────────
 function renderFreightPanel(){
-  let h='<div class="info-note">Set your flat freight rate per supplier. Orders over the free threshold ship at no cost — freight drops to $0 automatically across all calculations.</div>';
-  h+='<div class="card"><h2>Freight rates — your QLD postcode</h2><p class="desc">Update whenever rates change</p>';
+  let h='<div class="info-note">📦 Set your flat freight rate per supplier. Orders over the free threshold ship for free — drops to $0 automatically across all calculations.</div>';
+  h+='<div class="card"><div class="card-title">Freight rates — QLD postcode</div><div class="card-desc">Update whenever rates change</div>';
   SUPS.forEach(s=>{
     const f=FREIGHT[s.id];
-    h+=`<div class="ing-row"><div class="ing-left"><div class="ing-name">${s.name}</div><div class="ing-sub"><a href="https://${s.url}" target="_blank" style="color:var(--copper-light)">${s.url}</a></div></div>
-    <div class="freight-input-wrap">
-      <div class="freight-input-row"><span>Flat $</span><input type="number" step="0.50" min="0" value="${f.rate}" oninput="updFreight('${s.id}','rate',this.value)"></div>
-      <div class="freight-input-row"><span>Free over $</span><input type="number" step="5" min="0" value="${f.freeOver==null?'':f.freeOver}" placeholder="—" oninput="updFreight('${s.id}','freeOver',this.value)"></div>
+    h+=`<div class="freight-row"><div><div class="freight-name">${s.name}</div><div class="freight-url"><a href="https://${s.url}" target="_blank">${s.url}</a></div></div>
+    <div class="freight-inputs">
+      <div class="freight-field"><span>Flat $</span><input type="number" step="0.50" min="0" value="${f.rate}" oninput="updFreight('${s.id}','rate',this.value)"></div>
+      <div class="freight-field"><span>Free over $</span><input type="number" step="5" min="0" value="${f.freeOver==null?'':f.freeOver}" placeholder="—" oninput="updFreight('${s.id}','freeOver',this.value)"></div>
     </div></div>`;
   });
   h+='</div><p class="footnote">Freight is factored into every recipe total and equipment landed cost automatically.</p>';
   document.getElementById('freight-panel').innerHTML=h;
 }
 function updFreight(supId,field,val){
-  if(field==='rate')FREIGHT[supId].rate=(val==='')?0:(parseFloat(val)||0);
-  if(field==='freeOver')FREIGHT[supId].freeOver=(val==='')?null:(parseFloat(val)||null);
-  // Refresh active spirit section
+  if(field==='rate')FREIGHT[supId].rate=val===''?0:(parseFloat(val)||0);
+  if(field==='freeOver')FREIGHT[supId].freeOver=val===''?null:(parseFloat(val)||null);
   if(activeSpirit==='rum')renderSpiritSection('rum');
   if(activeSpirit==='vodka')renderSpiritSection('vodka');
   if(activeSpirit==='gin')renderSpiritSection('gin');
   if(activeSpirit==='equipment')renderEquipPanel();
 }
 
-// ── PRICES ─────────────────────────────────────────────────────────────────
 function renderPricesPanel(){
-  let h='<div class="info-note">Update ingredient prices here. Equipment prices are managed in the Equipment tab via supplier search links.</div>';
+  let h='<div class="info-note">💲 Update ingredient prices here. Equipment prices are managed in the Gear tab via supplier search links.</div>';
   const ingCats=[...new Set(INGS.map(i=>i.cat))];
   SUPS.forEach(s=>{
     let rows='';
     ingCats.forEach(cat=>{
       const catIngs=INGS.filter(i=>i.cat===cat&&i.p[s.id]!==undefined);
       if(!catIngs.length)return;
-      rows+=`<p class="cat-header">${cat}</p>`;
+      rows+=`<div class="cat-header">${cat}</div>`;
       catIngs.forEach(i=>{
         const v=i.p[s.id];
         rows+=`<div class="edit-row"><label>${i.name}</label><input type="number" step="0.01" min="0" value="${v==null?'':v}" placeholder="—" oninput="updIngP('${i.id}','${s.id}',this.value)"><span class="unit">${i.unit}</span></div>`;
       });
     });
-    h+=`<div class="card"><h2>${s.name}</h2><p class="sup-url"><a href="https://${s.url}" target="_blank">${s.url}</a></p>${rows}</div>`;
+    h+=`<div class="card"><div class="card-title">${s.name}</div><div class="sup-url"><a href="https://${s.url}" target="_blank">${s.url}</a></div>${rows}</div>`;
   });
   document.getElementById('prices-panel').innerHTML=h;
 }
 function updIngP(ingId,supId,val){
   const i=INGS.find(x=>x.id===ingId);if(!i)return;
-  i.p[supId]=(val==='')?null:(parseFloat(val)||null);
+  i.p[supId]=val===''?null:(parseFloat(val)||null);
   if(activeSpirit==='rum')renderSpiritSection('rum');
   if(activeSpirit==='vodka')renderSpiritSection('vodka');
   if(activeSpirit==='gin')renderSpiritSection('gin');
 }
 
-// ── FILE UPLOAD ────────────────────────────────────────────────────────────
 function triggerUpload(){document.getElementById('file-input').click();}
 function handleFile(input){
   const file=input.files[0];if(!file)return;
   const ext=file.name.split('.').pop().toLowerCase();
   if(ext==='txt'){const r=new FileReader();r.onload=e=>processText(e.target.result,file.name);r.readAsText(file);}
-  else if(ext==='docx'){const r=new FileReader();r.onload=e=>{if(typeof mammoth!=='undefined'){mammoth.extractRawText({arrayBuffer:e.target.result}).then(res=>processText(res.value,file.name)).catch(()=>processText('',file.name));}else{processText('',file.name);}};r.readAsArrayBuffer(file);}
-  else if(ext==='pdf'){showModal('pdf',{filename:file.name});}
+  else if(ext==='docx'){const r=new FileReader();r.onload=e=>{if(typeof mammoth!=='undefined'){mammoth.extractRawText({arrayBuffer:e.target.result}).then(res=>processText(res.value,file.name)).catch(()=>processText('',file.name));}else processText('',file.name);};r.readAsArrayBuffer(file);}
+  else if(ext==='pdf')showModal('pdf',{filename:file.name});
   input.value='';
 }
 function processText(text,filename){
@@ -833,52 +1080,25 @@ function processText(text,filename){
   pendingRecipe={title,litres,items,unknowns,desc:'Uploaded recipe'};
   showModal('confirm',{title,items,unknowns,litres});
 }
-
 function showModal(type,data){
   const root=document.getElementById('modal-root');
   if(type==='confirm'){
     const{title,items,unknowns,litres}=data;
     const preview=items.map(it=>`<div>+ <strong>${ingById(it.id)?ingById(it.id).name:it.id}</strong> — ${it.lbl}</div>`).join('');
-    root.innerHTML=`<div class="modal-wrap"><div class="modal">
-      <h3>Recipe detected</h3>
-      <p>Found ${items.length} ingredient(s) in a ${litres}L batch.</p>
-      <input type="text" id="rname" value="${title}">
-      <div class="parsed-preview">${preview||'No recognised ingredients.'}</div>
-      ${unknowns.length?`<div class="info-note">Not recognised: ${unknowns.slice(0,3).join(', ')}</div>`:''}
-      <button class="confirm-btn" onclick="confirmRecipe()">Add to tracker</button>
-      <button class="cancel-btn" onclick="closeModal()">Cancel</button>
-    </div></div>`;
-  } else if(type==='pdf'){
-    root.innerHTML=`<div class="modal-wrap"><div class="modal">
-      <h3>PDF recipe</h3><p>Paste the recipe text below.</p>
-      <textarea id="pdf-text" placeholder="Paste recipe text here..."></textarea>
-      <button class="confirm-btn" onclick="processPdfText('${data.filename}')">Parse recipe</button>
-      <button class="cancel-btn" onclick="closeModal()">Cancel</button>
-    </div></div>`;
+    root.innerHTML=`<div class="modal-wrap"><div class="modal"><h3>Recipe detected</h3><p>Found ${items.length} ingredient(s) in a ${litres}L batch.</p><input type="text" id="rname" value="${title}"><div class="parsed-preview">${preview||'No recognised ingredients.'}</div>${unknowns.length?`<div class="info-note">Not recognised: ${unknowns.slice(0,3).join(', ')}</div>`:''}<button class="confirm-btn" onclick="closeModal()">OK — got it</button><button class="cancel-btn" onclick="closeModal()">Close</button></div></div>`;
+  }else if(type==='pdf'){
+    root.innerHTML=`<div class="modal-wrap"><div class="modal"><h3>PDF recipe</h3><p>Paste the recipe text below.</p><textarea id="pdf-text" placeholder="Paste recipe text here..."></textarea><button class="confirm-btn" onclick="processPdfText('${data.filename}')">Parse recipe</button><button class="cancel-btn" onclick="closeModal()">Cancel</button></div></div>`;
   }
-}
-function confirmRecipe(){
-  if(!pendingRecipe)return;
-  const name=document.getElementById('rname').value.trim();
-  alert('Custom recipes from upload will be added as a future feature — for now, add ingredients via the Prices tab and edit recipe items in code.');
-  closeModal();
 }
 function processPdfText(fn){const t=document.getElementById('pdf-text').value;closeModal();processText(t,fn);}
 function closeModal(){document.getElementById('modal-root').innerHTML='';}
 
-// ── SEARCH ─────────────────────────────────────────────────────────────────
 function globalSearch(query){
   const q=query.toLowerCase().trim();
-  if(!q){
-    document.querySelectorAll('.card,.ing-row,.equip-item-card').forEach(el=>el.style.display='');
-    return;
-  }
-  document.querySelectorAll('.card,.ing-row,.equip-item-card').forEach(card=>{
-    card.style.display=card.innerText.toLowerCase().includes(q)?'':'none';
-  });
+  if(!q){document.querySelectorAll('.card,.ing-row,.equip-card').forEach(el=>el.style.display='');return;}
+  document.querySelectorAll('.card,.ing-row,.equip-card').forEach(card=>{card.style.display=card.innerText.toLowerCase().includes(q)?'':'none';});
 }
 
-// ── INIT ───────────────────────────────────────────────────────────────────
 switchSpirit('rum');
 switchRumStill('air');
 </script>
